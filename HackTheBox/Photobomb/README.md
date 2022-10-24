@@ -28,12 +28,12 @@ Nmap done: 1 IP address (1 host up) scanned in 8.38 seconds
 ```
 
 Ok standard server with SSH and a webbed site which seems to wanting to point us to photobomb.htb, which ill add to my hosts file just for ease of use
-![Picture of homepage][./Screenshots/home.png "Homepage"]
+![Picture of homepage](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/home.png)
 Page links to a "printer" page admin panel with a username and password
-![Picture of admin prompt][./Screenshots/login.png "Login"]
+![Picture of admin prompt](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/login.png)
 Well looking at the home page source code it seems some careless admin has just given the login out anyway
-![Picture of leaked privs][./Screenshots/leaked_privs.png "Privs"]
+![Picture of leaked privs](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/login.png)
 So pH0t0 : b0Mb! ok.
-![Picture of successful login][./Screenshots/printer_success.png "Login Success"]
+![Picture of successful login](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/printer_success.png)
 So this page looks to ask us to select a picture and a size / filetype to download for printing purposes.
 It does this by making a post request to the same site at /printer, so lets make one manually, as we can specifiy the file name, can we potentially use this to view other files?
