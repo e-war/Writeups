@@ -30,7 +30,7 @@ Nmap done: 1 IP address (1 host up) scanned in 8.38 seconds
 Ok standard server with SSH and a webbed site which seems to wanting to point us to photobomb.htb, which ill add to my hosts file just for ease of use
 ![Picture of homepage](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/home.png)
 Page links to a "printer" page admin panel with a username and password
-![Picture of admin prompt](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/login.png)
+![Picture of admin prompt](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/printer.png)
 Well looking at the home page source code it seems some careless admin has just given the login out anyway
 ![Picture of leaked privs](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/login.png)
 So pH0t0 : b0Mb! ok.
