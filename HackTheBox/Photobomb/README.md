@@ -1,9 +1,8 @@
-# Photobomb
+# Photobomb WIP
+## Start: 24/10/2022
+### IP Address: 10.10.11.182
 
-
-IP Address: 10.10.11.182
-
-Ok so first things first, nmap
+Ok so first things first, nmap scan, -sV for services/versions -sC for any default scripts we can run, Pn to treat the host as online (as we know it is)
 
 ```
 $> nmap 10.10.11.182 -sV -sC -Pn                                                                                                                           ✔ 
@@ -27,13 +26,19 @@ Nmap done: 1 IP address (1 host up) scanned in 8.38 seconds
 
 ```
 
-Ok standard server with SSH and a webbed site which seems to wanting to point us to photobomb.htb, which ill add to my hosts file just for ease of use
+Ok standard server with SSH and a webbed site which seems to wanting to point us to photobomb.htb, which i'll add to my hosts file just for ease of use.
+
+I mostly swap to the inbuilt browser in burpsuite whenever i look at websites just so that any action i take i can always send to the repeater function and replay them with modifications.
+
+#### Homepage
 ![Picture of homepage](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/home.png)
-Page links to a "printer" page admin panel with a username and password
+Page is very simple, has a link to a "printer" page with a username and password
+Looking at the home page source code it seems some careless admin has just given out some credentials in the photobomb.js file loaded by default.
+![Picture of leaked privs](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/leaked_privs.png)
+So pH0t0 : b0Mb! ok. the name Jameson given here could be useful too.
+#### Printer page
 ![Picture of admin prompt](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/printer.png)
-Well looking at the home page source code it seems some careless admin has just given the login out anyway
-![Picture of leaked privs](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/login.png)
-So pH0t0 : b0Mb! ok.
+Well we have some credentials.. might as well try them
 ![Picture of successful login](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/printer_success.png)
 So this page looks to ask us to select a picture and a size / filetype to download for printing purposes.
-It does this by making a post request to the same site at /printer, so lets make one manually, as we can specifiy the file name, can we potentially use this to view other files?
+It does this by making a post request along with the form data to the same site at /printer, so lets make one manually, as we can specifiy the file name, can we potentially use this to view other files?
