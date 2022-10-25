@@ -41,4 +41,8 @@ So pH0t0 : b0Mb! ok. the name Jameson given here could be useful too.
 Well we have some credentials.. might as well try them
 ![Picture of successful login](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/printer_success.png)
 So this page looks to ask us to select a picture and a size / filetype to download for printing purposes.
-It does this by making a post request along with the form data to the same site at /printer, so lets make one manually, as we can specifiy the file name, can we potentially use this to view other files?
+It does this by making a post request along with the form data to the same site at /printer, so lets make one manually, as we can specifiy the file name, my initial thought is can we potentially use this to view other files?
+
+So lets hit that button and inspect the request!
+![Picture of repeater](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/repeat.png)
+So we send a filename, filetype and size. 
