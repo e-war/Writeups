@@ -5,7 +5,7 @@
 Ok so first things first, nmap scan, -sV for services/versions -sC for any default scripts we can run, Pn to treat the host as online (as we know it is)
 
 ```
-$> nmap 10.10.11.182 -sV -sC -Pn                                                                                                                           ✔ 
+$> nmap 10.10.11.182 -sV -sC -Pn
 Starting Nmap 7.92 ( https://nmap.org ) at 2022-10-24 19:53 BST
 Nmap scan report for 10.10.11.182
 Host is up (0.029s latency).
@@ -46,3 +46,22 @@ It does this by making a post request along with the form data to the same site 
 So lets hit that button and inspect the request!
 ![Picture of repeater](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/repeat.png)
 So we send a filename, filetype and size. 
+Well lets not send anything! What do we get back? 500 error showing a backtrace of the ruby program which runs the server, including what it looks for. Here it shows it's matching a filename using 
+![Picture of 500 error 1](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/error_500_1.png)
+```
+if photo.match(/\.{2}|\//)
+```
+Well i dont know regex well enough, but it seems it checks for either a `..` or a `/` symbol to try to block directory inclusions
+The filename seems secure enough, it can only find pictures that are there, ignores directories, and causes the whole page to error if the system doesn't find the file.
+So lets try another parameter, we can use the same technique to view the regex backtrace for the filetype.
+![Picture of 500 error 2](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/error_500_2.png)
+```
+ if !filetype.match(/^(png|jpg)/)
+```
+again, im not the best with regex. but this regex allows any character, well lets try and breakout using this parameter, i'll put a semicolon and a sleep command and see what happens
+```
+photo=.&filetype=png;sleep 20&dimensions=0x0
+```
+and what do you know, that page took ages to load.. about 20 seconds!
+![Picture of loading page](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/waiting20.png)
+### Command Injection
