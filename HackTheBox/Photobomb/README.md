@@ -79,6 +79,11 @@ encoded comes out to
 ![Picture of exploit 1](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/owned_page.png)
 ![Picture of exploit 2](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/owned_shell.png)
 SHELL ACCESS!
+
+## User Access
 We are in command of the user "wizard", lets check this home directory out!
 ![Picture of user home folder](https://github.com/e-war/Writeups/blob/master/HackTheBox/Photobomb/Screenshots/user_folder.png)
 And here we find the user.txt flag, I'll let you grab that yourself if you're reading this :)
+## Root Access
+Ok, so we have the user account, the first thing i run to make things easier to find is linpeas!
+
