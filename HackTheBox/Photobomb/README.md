@@ -1,5 +1,6 @@
-# Photobomb WIP
+# Photobomb
 ## Start: 24/10/2022
+## End:   27/10/2022
 ### IP Address: 10.10.11.182
 
 Ok so first things first, nmap scan, -sV for services/versions -sC for any default scripts we can run, Pn to treat the host as online (as we know it is)
