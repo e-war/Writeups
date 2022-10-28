@@ -23,3 +23,50 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 pop shoppy.htb into host file and away we go using burp to the website, where we're met by a waiting page followed by a redirect to the main page:
 ![Picture of wait page](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/1Shoppy_Wait.png)
 ![Picture of main page](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/2Shoppy_main.png)
+Ok, a boring countdown, are there any interesting scripts? 
+```
+<script src="js/jquery.js"></script>
+<script src="js/plugins.js"></script>
+<script src="js/jquery.countdown.min.js"></script>
+<script src="js/main.js"></script>
+
+```
+Nothing really stands out when viewing these however so next bit of info gathering is testing out if there are some hidden directories we can search for, typically i use gobuster for this
+
+```
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://shoppy.htb
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /home/elliot/Programs/Security/SecLists/Discovery/Web-Content/raft-medium-words.txt
+[+] Negative Status codes:   404
+[+] Exclude Length:          169
+[+] User Agent:              gobuster/3.1.0
+[+] Timeout:                 10s
+===============================================================
+2022/10/28 20:10:50 Starting gobuster in directory enumeration mode
+===============================================================
+/admin                (Status: 302) [Size: 28] [--> /login]
+/images               (Status: 301) [Size: 179] [--> /images/]
+/login                (Status: 200) [Size: 1074]              
+/js                   (Status: 301) [Size: 171] [--> /js/]    
+/css                  (Status: 301) [Size: 173] [--> /css/]   
+/assets               (Status: 301) [Size: 179] [--> /assets/]
+/Admin                (Status: 302) [Size: 28] [--> /login]   
+/Login                (Status: 200) [Size: 1074]              
+/fonts                (Status: 301) [Size: 177] [--> /fonts/] 
+/ADMIN                (Status: 302) [Size: 28] [--> /login]   
+/exports              (Status: 301) [Size: 181] [--> /exports/]
+/LogIn                (Status: 200) [Size: 1074]               
+/LOGIN                (Status: 200) [Size: 1074]               
+                                                               
+===============================================================
+2022/10/28 20:14:13 Finished
+===============================================================
+```
+Well would you look at that, an /admin which redirects to the /login page and an /exports page too, although this only redirects to a path which cant be fetched..
+Lets take a look at that admin page anyway
+![Picture of admin login page](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/3Shoppy_admin.png)
+admin:admin is probably too good to hope for, but looks like if we put a quote mark in the page it times out! So we may be able to break out of some sort of database query!
