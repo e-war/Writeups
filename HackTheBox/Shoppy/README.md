@@ -79,9 +79,9 @@ So the steps being:
 
 i can't be sure as we can't really get a response from the server aside from the timeout error we recieve when the sql query breaks.
 
-![SQL 1](ttps://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/4Shoppy_SQL1.png)
+![SQL 1](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/4Shoppy_SQL1.png)
 
-![SQL 2](ttps://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/5Shoppy_SQL2.png)
+![SQL 2](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/5Shoppy_SQL2.png)
 
 
 `admin'&&'` includes quote marks returns the normal "wrong credentials" error which means that the system is reading this as valid sql.
@@ -96,6 +96,6 @@ Would result in `'WHERE user.username == admin'||' && user.password == ""'`
 Which means where username == admin OR (&& password == password), which removes the password from being a neccessary element as we only need the username or the password.
 
 So lets give that a try...
-![Crafted String](ttps://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/6Shoppy_Crafted.png)
+![Crafted String](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/6Shoppy_Crafted.png)
 
-![Login Bypassed](ttps://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/7Shoppy_admin_bypass.png)
+![Login Bypassed](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/7Shoppy_admin_bypass.png)
