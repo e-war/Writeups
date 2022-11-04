@@ -99,3 +99,14 @@ So lets give that a try...
 ![Crafted String](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/6Shoppy_Crafted.png)
 
 ![Login Bypassed](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/7Shoppy_admin_bypass.png)
+Bingo
+
+So what does this admin page offer us? An ability to search for a user and retrieve a json object which includes the ID, name, and a hashed password...
+![Search for admin user](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/8Shoppy_Search_user.png)
+![Search for admin user 2](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/9Shoppy_admin_results.png)
+
+While i did initally try sqlmap on the previous sql injection site (which didn't work due to the timeout each time the sql failed), i believe we may have a better chance of running it against this internal admin search as we actually recieve an error message when the sql breaks (which it still can when including a quote mark)
+
+![sqlmap](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/10sqlmap.png)
+And while running sqlmap i refreshed the results page, and it seems one of the sqlmap probe requests has triggered all items to be read onto screen!
+![shoppy all results](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/11Shoppy_all_results.png)
