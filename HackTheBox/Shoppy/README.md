@@ -110,3 +110,52 @@ While i did initally try sqlmap on the previous sql injection site (which didn't
 ![sqlmap](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/10sqlmap.png)
 And while running sqlmap i refreshed the results page, and it seems one of the sqlmap probe requests has triggered all items to be read onto screen!
 ![shoppy all results](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/11Shoppy_all_results.png)
+
+So we have a new user to look into, Josh, the passwords here look like md5 encrypted hashes which is good as they are simply cracked, and even most online rainbow tables make short work of hashes, putting the admin password into these tables doesn't really give much but josh's password seems to be easily gotten:
+
+![MD5 Decrypt](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/12MD5_decrypt.png)
+
+Josh: remembermethisway
+
+Unfortunately josh doesn't have any extra permissions on this site above admin, nor does this password work for an ssh connection.. So maybe I'm missing something on this site, while nmap does give a good idea of what servers are running, it only tells us about the default web server and doesn't give any DNS or VHOST information, so i chose to run gobuster again, instead using the VHOST command to see if there are some subdomains that i might've missed..
+```
+gobuster vhost -u shoppy.htb -w ~/Programs/Security/SecLists/Discovery/DNS/bitquark-subdomains-top100000.txt                                                                                                              
+===============================================================
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:          http://shoppy.htb
+[+] Method:       GET
+[+] Threads:      10
+[+] Wordlist:     /home/elliot/Programs/Security/SecLists/Discovery/DNS/bitquark-subdomains-top100000.txt
+[+] User Agent:   gobuster/3.1.0
+[+] Timeout:      10s
+===============================================================
+2022/11/05 13:05:48 Starting gobuster in VHOST enumeration mode
+===============================================================
+Found: mattermost.shoppy.htb (Status: 200) [Size: 3122]
+                                                       
+===============================================================
+2022/11/05 13:11:01 Finished
+
+```
+
+So i did miss something, so it might be a good idea to perform a dns enumeration just after finding the webserver in nmap next time
+So going to mattermost.shoppy.htb we see a mattermost page, a internal messaging system like slack it looks like, might as well try the credentials we found earlier for josh..
+
+![Mattermost login](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/13Mattermost_login.png)
+
+![Mattermost logged in](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/14Mattermost_loggedin.png)
+
+Excellent, we have gained access to the internal chat system, there looks to be a few rooms for chats, but in the "Deploy machine" chat we see more credentials leaked:
+jaeger: Sh0ppyBest@pp!
+
+![Mattermost login creds](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/15Mattermost_login_creds.png)
+
+they're discussing deployment on a machine, which might be the server we're looking at breaking into so its possible these credentials could work on the SSH connection, lets give that a try..
+
+
+![SSH Login](https://github.com/e-war/Writeups/blob/master/HackTheBox/Shoppy/Screenshots/16SSH_Login.png)
+
+### User access obtained
+
