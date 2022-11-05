@@ -159,3 +159,118 @@ they're discussing deployment on a machine, which might be the server we're look
 
 ### User access obtained
 
+So aside from grabbing the user.txt from the users (jaeger)'s home directory which i'll let you do yourselves 
+I'm gonna start as usual by downloading linpeas, which i've included in this directory seperately.
+
+#### Exploitation shortlist
+```
+╔══════════╣ CVEs Check
+Potentially Vulnerable to CVE-2022-0847
+
+Potentially Vulnerable to CVE-2022-2588
+
+╔══════════╣ Executing Linux Exploit Suggester
+╚ https://github.com/mzet-/linux-exploit-suggester
+[+] [CVE-2021-3490] eBPF ALU32 bounds tracking for bitwise ops
+
+   Details: https://www.graplsecurity.com/post/kernel-pwning-with-ebpf-a-love-story
+   Exposure: probable
+   Tags: ubuntu=20.04{kernel:5.8.0-(25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52)-*},ubuntu=21.04{kernel:5.11.0-16-*}
+   Download URL: https://codeload.github.com/chompie1337/Linux_LPE_eBPF_CVE-2021-3490/zip/main
+   Comments: CONFIG_BPF_SYSCALL needs to be set && kernel.unprivileged_bpf_disabled != 1
+
+[+] [CVE-2022-0847] DirtyPipe
+
+   Details: https://dirtypipe.cm4all.com/
+   Exposure: probable
+   Tags: ubuntu=(20.04|21.04),[ debian=11 ]
+   Download URL: https://haxx.in/files/dirtypipez.c
+
+[+] [CVE-2021-4034] PwnKit
+
+   Details: https://www.qualys.com/2022/01/25/cve-2021-4034/pwnkit.txt
+   Exposure: probable
+   Tags: ubuntu=10|11|12|13|14|15|16|17|18|19|20|21,[ debian=7|8|9|10|11 ],fedora,manjaro
+   Download URL: https://codeload.github.com/berdav/CVE-2021-4034/zip/main
+
+[+] [CVE-2022-32250] nft_object UAF (NFT_MSG_NEWSET)
+
+   Details: https://research.nccgroup.com/2022/09/01/settlers-of-netlink-exploiting-a-limited-uaf-in-nf_tables-cve-2022-32250/
+https://blog.theori.io/research/CVE-2022-32250-linux-kernel-lpe-2022/
+   Exposure: less probable
+   Tags: ubuntu=(22.04){kernel:5.15.0-27-generic}
+   Download URL: https://raw.githubusercontent.com/theori-io/CVE-2022-32250-exploit/main/exp.c
+   Comments: kernel.unprivileged_userns_clone=1 required (to obtain CAP_NET_ADMIN)
+
+[+] [CVE-2022-2586] nft_object UAF
+
+   Details: https://www.openwall.com/lists/oss-security/2022/08/29/5
+   Exposure: less probable
+   Tags: ubuntu=(20.04){kernel:5.12.13}
+   Download URL: https://www.openwall.com/lists/oss-security/2022/08/29/5/1
+   Comments: kernel.unprivileged_userns_clone=1 required (to obtain CAP_NET_ADMIN)
+
+[+] [CVE-2021-3156] sudo Baron Samedit
+
+   Details: https://www.qualys.com/2021/01/26/cve-2021-3156/baron-samedit-heap-based-overflow-sudo.txt
+   Exposure: less probable
+   Tags: mint=19,ubuntu=18|20, debian=10
+   Download URL: https://codeload.github.com/blasty/CVE-2021-3156/zip/main
+
+[+] [CVE-2021-3156] sudo Baron Samedit 2
+
+   Details: https://www.qualys.com/2021/01/26/cve-2021-3156/baron-samedit-heap-based-overflow-sudo.txt
+   Exposure: less probable
+   Tags: centos=6|7|8,ubuntu=14|16|17|18|19|20, debian=9|10
+   Download URL: https://codeload.github.com/worawit/CVE-2021-3156/zip/main
+
+[+] [CVE-2021-22555] Netfilter heap out-of-bounds write
+
+   Details: https://google.github.io/security-research/pocs/linux/cve-2021-22555/writeup.html
+   Exposure: less probable
+   Tags: ubuntu=20.04{kernel:5.8.0-*}
+   Download URL: https://raw.githubusercontent.com/google/security-research/master/pocs/linux/cve-2021-22555/exploit.c
+   ext-url: https://raw.githubusercontent.com/bcoles/kernel-exploits/master/CVE-2021-22555/exploit.c
+   Comments: ip_tables kernel module must be loaded
+
+[+] [CVE-2017-0358] ntfs-3g-modprobe
+
+   Details: https://bugs.chromium.org/p/project-zero/issues/detail?id=1072
+   Exposure: less probable
+   Tags: ubuntu=16.04{ntfs-3g:2015.3.14AR.1-1build1},debian=7.0{ntfs-3g:2012.1.15AR.5-2.1+deb7u2},debian=8.0{ntfs-3g:2014.2.15AR.2-1+deb8u2}
+   Download URL: https://github.com/offensive-security/exploit-database-bin-sploits/raw/master/bin-sploits/41356.zip
+   Comments: Distros use own versioning scheme. Manual verification needed. Linux headers must be installed. System must have at least two CPU cores.
+
+╔══════════╣ Users with console
+deploy:x:1001:1001::/home/deploy:/bin/sh
+jaeger:x:1000:1000:jaeger,,,:/home/jaeger:/bin/bash
+mattermost:x:998:997::/home/mattermost:/bin/sh
+postgres:x:119:127:PostgreSQL administrator,,,:/var/lib/postgresql:/bin/bash
+root:x:0:0:root:/root:/bin/bash
+
+
+══╣ Possible private SSH keys were found!
+/home/jaeger/.nvm/versions/node/v18.6.0/lib/node_modules/npm/docs/output/using-npm/config.html
+/home/jaeger/.nvm/versions/node/v18.6.0/lib/node_modules/npm/docs/content/using-npm/config.md
+/home/jaeger/.nvm/versions/node/v18.6.0/lib/node_modules/npm/lib/utils/config/definitions.js
+/home/jaeger/ShoppyApp/node_modules/proxy-agent/test/ssl-cert-snakeoil.key
+/home/jaeger/ShoppyApp/node_modules/nssocket/test/fixtures/ryans-key.pem
+
+╔══════════╣ .sh files in path
+╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#script-binaries-in-path
+/usr/bin/dockerd-rootless.sh
+/usr/bin/gettext.sh
+/usr/bin/dockerd-rootless-setuptool.sh
+
+╔══════════╣ Files inside others home (limit 20)
+/home/deploy/.bash_logout
+/home/deploy/password-manager
+/home/deploy/linpeas.sh
+/home/deploy/creds.txt
+/home/deploy/.bashrc
+/home/deploy/.python_history
+/home/deploy/.profile
+/home/deploy/password-manager.cpp
+/var/www/html/index.nginx-debian.html
+/var/lib/postgresql/.psql_history
+```
