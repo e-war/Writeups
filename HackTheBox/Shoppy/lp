@@ -57,8 +57,8 @@ Potentially Vulnerable to CVE-2022-2588
 New path exported: /home/jaeger/.nvm/versions/node/v18.6.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/local/sbin:/usr/sbin:/sbin
 
 ╔══════════╣ Date & uptime
-Sat 05 Nov 2022 10:15:39 AM CDT
- 10:15:39 up 45 min,  3 users,  load average: 0.99, 0.45, 0.23
+Sun 06 Nov 2022 07:17:37 AM CST
+ 07:17:37 up 10 min,  3 users,  load average: 0.28, 0.28, 0.26
 
 ╔══════════╣ Any sd*/disk* disk in /dev? (limit 20)
 disk
@@ -78,21 +78,21 @@ proc	/proc	proc	defaults,nosuid,nodev,noexec,relatime,hidepid=2	0	0
 ╚ Any private information inside environment variables?
 HISTFILESIZE=0
 USER=jaeger
-SSH_CLIENT=10.10.16.43 44090 22
+SSH_CLIENT=10.10.16.43 34820 22
 XDG_SESSION_TYPE=tty
 SHLVL=1
 MOTD_SHOWN=pam
 HOME=/home/jaeger
 OLDPWD=/home/jaeger
 NVM_BIN=/home/jaeger/.nvm/versions/node/v18.6.0/bin
-SSH_TTY=/dev/pts/3
+SSH_TTY=/dev/pts/0
 NVM_INC=/home/jaeger/.nvm/versions/node/v18.6.0/include/node
 NVM_DIR=/home/jaeger/.nvm
 LOGNAME=jaeger
 _=./linpeas.sh
 XDG_SESSION_CLASS=user
 TERM=xterm-256color
-XDG_SESSION_ID=21
+XDG_SESSION_ID=3
 PATH=/home/jaeger/.nvm/versions/node/v18.6.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/local/sbin:/usr/sbin:/sbin
 XDG_RUNTIME_DIR=/run/user/1000
 LANG=en_US.UTF-8
@@ -100,7 +100,7 @@ HISTSIZE=0
 LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
 SHELL=/bin/bash
 PWD=/tmp
-SSH_CONNECTION=10.10.16.43 44090 10.10.11.180 22
+SSH_CONNECTION=10.10.16.43 34820 10.10.11.180 22
 NVM_CD_FLAGS=
 HISTFILE=/dev/null
 
@@ -225,13 +225,14 @@ apparmor module is loaded.
                 ╚════════════════════════════════════════════════╝
 ╔══════════╣ Cleaned processes
 ╚ Check weird & unexpected proceses run by root: https://book.hacktricks.xyz/linux-hardening/privilege-escalation#processes
-jaeger      2776  0.0  0.4  12236  9068 pts/3    Ss   09:58   0:00 -bash
-jaeger     20917  0.3  0.1   3576  2856 pts/3    S+   10:15   0:00  _ /bin/sh ./linpeas.sh -qN
-jaeger     24057  0.0  0.0   3576  1280 pts/3    S+   10:16   0:00      _ /bin/sh ./linpeas.sh -qN
-jaeger     24059  0.0  0.1   9732  3212 pts/3    R+   10:16   0:00      |   _ ps fauxwww
-jaeger     24061  0.0  0.0   3576  1280 pts/3    S+   10:16   0:00      _ /bin/sh ./linpeas.sh -qN
-jaeger      1258  0.0  2.2 635996 45616 ?        Ssl  09:30   0:02 PM2 v5.2.0: God Daemon (/home/jaeger/.pm2)
-jaeger      1281  1.2  4.8 751740 96300 ?        Ssl  09:30   0:33  _ node /home/jaeger/ShoppyApp/index.js
+jaeger      4915  0.0  0.4  12236  9096 pts/1    Ss   07:08   0:00 -bash
+jaeger      1598  0.0  0.2  12236  5660 pts/0    Ss   07:07   0:00 -bash
+jaeger     21616  0.2  0.1   3576  2820 pts/0    S+   07:17   0:00  _ /bin/sh ./linpeas.sh -P Sh0ppyBest@pp! -Nq
+jaeger     24762  0.0  0.0   3576  1280 pts/0    S+   07:17   0:00      _ /bin/sh ./linpeas.sh -P Sh0ppyBest@pp! -Nq
+jaeger     24766  0.0  0.1   9732  3256 pts/0    R+   07:17   0:00      |   _ ps fauxwww
+jaeger     24765  0.0  0.0   3576  1280 pts/0    S+   07:17   0:00      _ /bin/sh ./linpeas.sh -P Sh0ppyBest@pp! -Nq
+jaeger      1081  0.1  2.5 635740 50376 ?        Ssl  07:07   0:00 PM2 v5.2.0: God Daemon (/home/jaeger/.pm2)
+jaeger      1220  0.5  3.6 742268 72636 ?        Ssl  07:07   0:03  _ node /home/jaeger/ShoppyApp/index.js
 
 ╔══════════╣ Binary processes permissions (non 'root root' and not belonging to current user)
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#processes
@@ -258,7 +259,7 @@ incrontab Not Found
 /etc/cron.d:
 total 32
 drwxr-xr-x   2 root root  4096 Jul 22 13:54 .
-drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
+drwxr-xr-x 126 root root 12288 Nov  6 07:07 ..
 -rw-r--r--   1 root root   285 Feb  6  2021 anacron
 -rw-r--r--   1 root root   201 Jun  7  2021 e2scrub_all
 -rw-r--r--   1 root root   102 Feb 22  2021 .placeholder
@@ -267,7 +268,7 @@ drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
 /etc/cron.daily:
 total 48
 drwxr-xr-x   2 root root  4096 Sep 12 13:27 .
-drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
+drwxr-xr-x 126 root root 12288 Nov  6 07:07 ..
 -rwxr-xr-x   1 root root   311 Feb  6  2021 0anacron
 -rwxr-xr-x   1 root root  1478 Jun 10  2021 apt-compat
 -rwxr-xr-x   1 root root   384 Nov 19  2019 cracklib-runtime
@@ -280,20 +281,20 @@ drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
 /etc/cron.hourly:
 total 20
 drwxr-xr-x   2 root root  4096 Jul 22 11:24 .
-drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
+drwxr-xr-x 126 root root 12288 Nov  6 07:07 ..
 -rw-r--r--   1 root root   102 Feb 22  2021 .placeholder
 
 /etc/cron.monthly:
 total 24
 drwxr-xr-x   2 root root  4096 Jul 22 11:36 .
-drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
+drwxr-xr-x 126 root root 12288 Nov  6 07:07 ..
 -rwxr-xr-x   1 root root   313 Feb  6  2021 0anacron
 -rw-r--r--   1 root root   102 Feb 22  2021 .placeholder
 
 /etc/cron.weekly:
 total 28
 drwxr-xr-x   2 root root  4096 Jul 22 11:37 .
-drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
+drwxr-xr-x 126 root root 12288 Nov  6 07:07 ..
 -rwxr-xr-x   1 root root   312 Feb  6  2021 0anacron
 -rwxr-xr-x   1 root root   813 Feb 19  2021 man-db
 -rw-r--r--   1 root root   102 Feb 22  2021 .placeholder
@@ -302,9 +303,9 @@ drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
 total 20
 drwxr-xr-x 2 root root 4096 Jul 22 11:39 .
 drwxr-xr-x 5 root root 4096 Jul 22 14:00 ..
--rw------- 1 root root    9 Nov  5 09:35 cron.daily
--rw------- 1 root root    9 Nov  5 09:45 cron.monthly
--rw------- 1 root root    9 Nov  5 09:40 cron.weekly
+-rw------- 1 root root    9 Nov  6 07:11 cron.daily
+-rw------- 1 root root    9 Sep 12 13:31 cron.monthly
+-rw------- 1 root root    9 Nov  6 07:16 cron.weekly
 
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
@@ -330,20 +331,20 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 ╔══════════╣ Analyzing .service files
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#services
-You cant write on systemd PATH
+You can't write on systemd PATH
 
 ╔══════════╣ System timers
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#timers
 NEXT                        LEFT          LAST                        PASSED               UNIT                         ACTIVATES
-Sat 2022-11-05 10:32:39 CDT 16min left    Sat 2022-11-05 09:32:31 CDT 43min ago            anacron.timer                anacron.service
-Sat 2022-11-05 10:49:28 CDT 33min left    Mon 2022-08-08 01:54:41 CDT 2 months 28 days ago fstrim.timer                 fstrim.service
-Sat 2022-11-05 11:00:21 CDT 44min left    Mon 2022-08-08 10:27:52 CDT 2 months 28 days ago apt-daily.timer              apt-daily.service
-Sat 2022-11-05 13:29:26 CDT 3h 13min left Mon 2022-08-08 06:19:57 CDT 2 months 28 days ago fwupd-refresh.timer          fwupd-refresh.service
-Sun 2022-11-06 00:00:00 CDT 13h left      Sat 2022-11-05 09:30:42 CDT 45min ago            logrotate.timer              logrotate.service
-Sun 2022-11-06 00:00:00 CDT 13h left      Sat 2022-11-05 09:30:42 CDT 45min ago            man-db.timer                 man-db.service
-Sun 2022-11-06 03:10:10 CST 17h left      Sat 2022-11-05 09:31:11 CDT 44min ago            e2scrub_all.timer            e2scrub_all.service
-Sun 2022-11-06 06:49:26 CST 21h left      Sat 2022-11-05 10:08:57 CDT 7min ago             apt-daily-upgrade.timer      apt-daily-upgrade.service
-Sun 2022-11-06 08:45:37 CST 23h left      Sat 2022-11-05 09:45:37 CDT 30min ago            systemd-tmpfiles-clean.timer systemd-tmpfiles-clean.service
+Sun 2022-11-06 07:19:01 CST 58s left      Mon 2022-08-08 01:54:41 CDT 2 months 29 days ago fstrim.timer                 fstrim.service
+Sun 2022-11-06 07:21:48 CST 3min 45s left n/a                         n/a                  systemd-tmpfiles-clean.timer systemd-tmpfiles-clean.service
+Sun 2022-11-06 11:46:06 CST 4h 28min left Mon 2022-08-08 10:27:52 CDT 2 months 29 days ago apt-daily.timer              apt-daily.service
+Sun 2022-11-06 14:29:49 CST 7h left       Mon 2022-08-08 06:19:57 CDT 2 months 29 days ago fwupd-refresh.timer          fwupd-refresh.service
+Mon 2022-11-07 00:00:00 CST 16h left      Sun 2022-11-06 07:06:55 CST 11min ago            logrotate.timer              logrotate.service
+Mon 2022-11-07 00:00:00 CST 16h left      Sun 2022-11-06 07:06:55 CST 11min ago            man-db.timer                 man-db.service
+Mon 2022-11-07 06:40:07 CST 23h left      Sun 2022-11-06 07:13:13 CST 4min 49s ago         apt-daily-upgrade.timer      apt-daily-upgrade.service
+Sun 2022-11-13 03:10:30 CST 6 days left   Sun 2022-11-06 07:07:24 CST 10min ago            e2scrub_all.timer            e2scrub_all.service
+n/a                         n/a           Sun 2022-11-06 07:11:03 CST 6min ago             anacron.timer                anacron.service
 
 ╔══════════╣ Analyzing .timer files
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#timers
@@ -393,39 +394,43 @@ Sun 2022-11-06 08:45:37 CST 23h left      Sat 2022-11-05 09:45:37 CDT 30min ago 
 /run/systemd/userdb/io.systemd.DynamicUser
   └─(Read Write)
 /run/udev/control
+/run/user/1000/gnupg/S.gpg-agent
+  └─(Read Write)
+/run/user/1000/gnupg/S.gpg-agent.browser
+  └─(Read Write)
+/run/user/1000/gnupg/S.gpg-agent.extra
+  └─(Read Write)
+/run/user/1000/gnupg/S.gpg-agent.ssh
+  └─(Read Write)
 /run/user/1000/systemd/inaccessible/sock
-/run/user/1001/gnupg/S.gpg-agent
-/run/user/1001/gnupg/S.gpg-agent.browser
-/run/user/1001/gnupg/S.gpg-agent.extra
-/run/user/1001/gnupg/S.gpg-agent.ssh
 /run/vmware/guestServicePipe
   └─(Read Write)
-/tmp/dbus-1HVI7kgL
-/tmp/dbus-5rHsq0tS
-/tmp/dbus-9IvE2hlp
-/tmp/dbus-Dloi59bE
-/tmp/dbus-dy4mH4FA
-/tmp/dbus-fkRmTp6Ftu
-/tmp/dbus-T3uLCYGF
-/tmp/dbus-uDjCZYO2US
-/tmp/dbus-vyQKEDGQfc
-/tmp/.ICE-unix/1002
+/tmp/dbus-1UgvB9Ok
+/tmp/dbus-3U3n4pV6
+/tmp/dbus-7MPKkBU8
+/tmp/dbus-etlxoXDF3A
+/tmp/dbus-genM3kcd
+/tmp/dbus-I88lGvND
+/tmp/dbus-IdtHhdQetq
+/tmp/dbus-l1ZIuX3Jwj
+/tmp/dbus-MsR6mqcc
+/tmp/.ICE-unix/1117
   └─(Read Write)
 /tmp/mongodb-27017.sock
-/tmp/plugin107758497
+/tmp/plugin119376709
   └─(Read )
-/tmp/plugin178603807
+/tmp/plugin161681455
   └─(Read )
-/tmp/plugin239183636
+/tmp/plugin3827199543
   └─(Read )
-/tmp/plugin3201889304
+/tmp/plugin603521804
   └─(Read )
-/tmp/plugin956743362
+/tmp/plugin975709664
   └─(Read )
 /tmp/.X11-unix/X0
   └─(Read Write)
-/var/lib/gdm3/.cache/ibus/dbus-LRW0guNw
-/var/run/docker/libnetwork/21abb5becfee.sock
+/var/lib/gdm3/.cache/ibus/dbus-CUEJJk03
+/var/run/docker/libnetwork/76a097988d5a.sock
 /var/run/docker/metrics.sock
 /var/run/postgresql/.s.PGSQL.5432
   └─(Read Write)
@@ -447,63 +452,63 @@ Possible weak user policy found on /etc/dbus-1/system.d/wpa_supplicant.conf (   
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#d-bus
 NAME                                  PID PROCESS USER             CONNECTION    UNIT SESSION DESCRIPTION
 :1.0                                    1 n/a     root             :1.0          -    -       -
-:1.1                                  463 n/a     systemd-timesync :1.1          -    -       -
-:1.10                                 636 n/a     root             :1.10         -    -       -
-:1.11                                 719 n/a     root             :1.11         -    -       -
-:1.2                                  638 n/a     root             :1.2          -    -       -
-:1.21                                 911 n/a     root             :1.21         -    -       -
-:1.24                                 925 n/a     Debian-gdm       :1.24         -    -       -
-:1.26                                 923 n/a     Debian-gdm       :1.26         -    -       -
-:1.27                                1002 n/a     Debian-gdm       :1.27         -    -       -
-:1.28                                1224 n/a     Debian-gdm       :1.28         -    -       -
-:1.3                                  627 n/a     root             :1.3          -    -       -
-:1.30                                1224 n/a     Debian-gdm       :1.30         -    -       -
-:1.31                                1332 n/a     root             :1.31         -    -       -
-:1.32                                1335 n/a     root             :1.32         -    -       -
-:1.33                                1372 n/a     Debian-gdm       :1.33         -    -       -
-:1.35                                1357 n/a     Debian-gdm       :1.35         -    -       -
-:1.36                                1351 n/a     Debian-gdm       :1.36         -    -       -
-:1.37                                1348 n/a     Debian-gdm       :1.37         -    -       -
-:1.38                                1361 n/a     Debian-gdm       :1.38         -    -       -
-:1.39                                1354 n/a     Debian-gdm       :1.39         -    -       -
-:1.4                                  633 n/a     root             :1.4          -    -       -
-:1.40                                1415 n/a     Debian-gdm       :1.40         -    -       -
-:1.41                                1372 n/a     Debian-gdm       :1.41         -    -       -
-:1.42                                1391 n/a     Debian-gdm       :1.42         -    -       -
-:1.43                                1449 n/a     colord           :1.43         -    -       -
+:1.1                                  568 n/a     systemd-timesync :1.1          -    -       -
+:1.10                                 642 n/a     root             :1.10         -    -       -
+:1.12                                 715 n/a     root             :1.12         -    -       -
+:1.2                                  643 n/a     root             :1.2          -    -       -
+:1.21                                 932 n/a     root             :1.21         -    -       -
+:1.25                                 964 n/a     Debian-gdm       :1.25         -    -       -
+:1.26                                 960 n/a     Debian-gdm       :1.26         -    -       -
+:1.27                                1117 n/a     Debian-gdm       :1.27         -    -       -
+:1.28                                1222 n/a     Debian-gdm       :1.28         -    -       -
+:1.3                                  644 n/a     root             :1.3          -    -       -
+:1.30                                1222 n/a     Debian-gdm       :1.30         -    -       -
+:1.31                                1333 n/a     root             :1.31         -    -       -
+:1.32                                1341 n/a     root             :1.32         -    -       -
+:1.34                                1351 n/a     Debian-gdm       :1.34         -    -       -
+:1.35                                1366 n/a     Debian-gdm       :1.35         -    -       -
+:1.36                                1364 n/a     Debian-gdm       :1.36         -    -       -
+:1.37                                1362 n/a     Debian-gdm       :1.37         -    -       -
+:1.38                                1380 n/a     Debian-gdm       :1.38         -    -       -
+:1.39                                1417 n/a     Debian-gdm       :1.39         -    -       -
+:1.4                                  631 n/a     root             :1.4          -    -       -
+:1.40                                1390 n/a     Debian-gdm       :1.40         -    -       -
+:1.41                                1445 n/a     Debian-gdm       :1.41         -    -       -
+:1.42                                1380 n/a     Debian-gdm       :1.42         -    -       -
+:1.43                                1461 n/a     colord           :1.43         -    -       -
 :1.5                                  637 n/a     root             :1.5          -    -       -
-:1.6                                  631 n/a     root             :1.6          -    -       -
+:1.6                                  641 n/a     root             :1.6          -    -       -
 :1.7                                  635 n/a     root             :1.7          -    -       -
-:1.8                                  662 n/a     root             :1.8          -    -       -
-:1.86                               26421 busctl  jaeger           :1.86         -    -       -
+:1.74                               27160 busctl  jaeger           :1.74         -    -       -
+:1.9                                  667 n/a     root             :1.9          -    -       -
 com.ubuntu.SoftwareProperties           - -       -                (activatable) -    -       -
-fi.w1.wpa_supplicant1                 638 n/a     root             :1.2          -    -       -
-net.hadess.SwitcherooControl          635 n/a     root             :1.7          -    -       -
+fi.w1.wpa_supplicant1                 644 n/a     root             :1.3          -    -       -
+net.hadess.SwitcherooControl          641 n/a     root             :1.6          -    -       -
  -- EUID=0 
 org.bluez                               - -       -                (activatable) -    -       -
-org.freedesktop.Accounts              627 n/a     root             :1.3          -    -       -
-org.freedesktop.ColorManager         1449 n/a     colord           :1.43         -    -       -
+org.freedesktop.Accounts              631 n/a     root             :1.4          -    -       -
+org.freedesktop.ColorManager         1461 n/a     colord           :1.43         -    -       -
 org.freedesktop.DBus                    1 n/a     root             -             -    -       -
-org.freedesktop.ModemManager1         662 n/a     root             :1.8          -    -       -
-org.freedesktop.NetworkManager        631 n/a     root             :1.6          -    -       -
-org.freedesktop.PackageKit           1335 n/a     root             :1.32         -    -       -
-org.freedesktop.PolicyKit1            633 n/a     root             :1.4          -    -       -
+org.freedesktop.ModemManager1         667 n/a     root             :1.9          -    -       -
+org.freedesktop.NetworkManager        635 n/a     root             :1.7          -    -       -
+org.freedesktop.PackageKit           1341 n/a     root             :1.32         -    -       -
+org.freedesktop.PolicyKit1            637 n/a     root             :1.5          -    -       -
 org.freedesktop.RealtimeKit1            - -       -                (activatable) -    -       -
-org.freedesktop.UDisks2               637 n/a     root             :1.5          -    -       -
-org.freedesktop.UPower               1332 n/a     root             :1.31         -    -       -
+org.freedesktop.UDisks2               643 n/a     root             :1.2          -    -       -
+org.freedesktop.UPower               1333 n/a     root             :1.31         -    -       -
 org.freedesktop.bolt                    - -       -                (activatable) -    -       -
 org.freedesktop.fwupd                   - -       -                (activatable) -    -       -
 org.freedesktop.hostname1               - -       -                (activatable) -    -       -
 org.freedesktop.locale1                 - -       -                (activatable) -    -       -
-org.freedesktop.login1                636 n/a     root             :1.10         -    -       -
+org.freedesktop.login1                642 n/a     root             :1.10         -    -       -
 org.freedesktop.network1                - -       -                (activatable) -    -       -
 org.freedesktop.nm_dispatcher           - -       -                (activatable) -    -       -
 org.freedesktop.realmd                  - -       -                (activatable) -    -       -
 org.freedesktop.resolve1                - -       -                (activatable) -    -       -
 org.freedesktop.systemd1                1 n/a     root             :1.0          -    -       -
 org.freedesktop.timedate1               - -       -                (activatable) -    -       -
-org.freedesktop.timesync1             463 n/a     systemd-timesync :1.1          -    -       -
-org.gnome.DisplayManager              719 n/a     root             :1.11         -    -       -
+org.freedesktop.timesync1             568 n/a     systemd-timesync :1.1          -    -       -
+org.gnome.DisplayManager              715 n/a     root             :1.12         -    -       -
  -- EUID=0 
 org.opensuse.CupsPkHelper.Mechanism     - -       -                (activatable) -    -       -
 
@@ -529,44 +534,44 @@ link-local	169.254.0.0
 
 docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
         inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
-        inet6 fe80::42:30ff:fe74:e2f6  prefixlen 64  scopeid 0x20<link>
-        ether 02:42:30:74:e2:f6  txqueuelen 0  (Ethernet)
+        inet6 fe80::42:55ff:fe76:2b4f  prefixlen 64  scopeid 0x20<link>
+        ether 02:42:55:76:2b:4f  txqueuelen 0  (Ethernet)
         RX packets 0  bytes 0 (0.0 B)
         RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 10  bytes 872 (872.0 B)
+        TX packets 8  bytes 652 (652.0 B)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
 eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         inet 10.10.11.180  netmask 255.255.254.0  broadcast 10.10.11.255
-        inet6 fe80::250:56ff:feb9:4183  prefixlen 64  scopeid 0x20<link>
-        inet6 dead:beef::250:56ff:feb9:4183  prefixlen 64  scopeid 0x0<global>
-        ether 00:50:56:b9:41:83  txqueuelen 1000  (Ethernet)
-        RX packets 42099  bytes 7583979 (7.2 MiB)
+        inet6 fe80::250:56ff:feb9:68d  prefixlen 64  scopeid 0x20<link>
+        inet6 dead:beef::250:56ff:feb9:68d  prefixlen 64  scopeid 0x0<global>
+        ether 00:50:56:b9:06:8d  txqueuelen 1000  (Ethernet)
+        RX packets 3997  bytes 1490412 (1.4 MiB)
         RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 35833  bytes 32058883 (30.5 MiB)
+        TX packets 2834  bytes 653105 (637.7 KiB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
 lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
         inet 127.0.0.1  netmask 255.0.0.0
         inet6 ::1  prefixlen 128  scopeid 0x10<host>
         loop  txqueuelen 1000  (Local Loopback)
-        RX packets 148749  bytes 45434954 (43.3 MiB)
+        RX packets 6086  bytes 1903708 (1.8 MiB)
         RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 148749  bytes 45434954 (43.3 MiB)
+        TX packets 6086  bytes 1903708 (1.8 MiB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
 
 ╔══════════╣ Active Ports
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#open-ports
-tcp        0      0 127.0.0.1:8065          0.0.0.0:*               LISTEN      -                   
 tcp        0      0 127.0.0.1:27017         0.0.0.0:*               LISTEN      -                   
 tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      -                   
 tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
 tcp        0      0 127.0.0.1:5432          0.0.0.0:*               LISTEN      -                   
+tcp        0      0 127.0.0.1:8065          0.0.0.0:*               LISTEN      -                   
 tcp6       0      0 :::9093                 :::*                    LISTEN      -                   
 tcp6       0      0 :::80                   :::*                    LISTEN      -                   
 tcp6       0      0 :::22                   :::*                    LISTEN      -                   
-tcp6       0      0 ::1:3000                :::*                    LISTEN      1281/node /home/jae 
+tcp6       0      0 ::1:3000                :::*                    LISTEN      1220/node /home/jae 
 tcp6       0      0 ::1:5432                :::*                    LISTEN      -                   
 
 ╔══════════╣ Can I sniff with tcpdump?
@@ -588,6 +593,11 @@ netpgp Not Found
 
 ╔══════════╣ Checking 'sudo -l', /etc/sudoers, and /etc/sudoers.d
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#sudo-and-suid
+Matching Defaults entries for jaeger on shoppy:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User jaeger may run the following commands on shoppy:
+    (deploy) /home/deploy/password-manager
 
 ╔══════════╣ Checking sudo tokens
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#reusing-sudo-tokens
@@ -656,25 +666,23 @@ uid=999(systemd-coredump) gid=999(systemd-coredump) groups=999(systemd-coredump)
 uid=9(news) gid=9(news) groups=9(news)
 
 ╔══════════╣ Login now
- 10:16:08 up 45 min,  3 users,  load average: 0.84, 0.47, 0.24
+ 07:18:05 up 11 min,  3 users,  load average: 0.44, 0.31, 0.27
 USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
 
 ╔══════════╣ Last logons
-jaeger   pts/3        Sat Nov  5 09:58:26 2022   still logged in                       10.10.16.43
-jaeger   pts/3        Sat Nov  5 09:57:31 2022 - Sat Nov  5 09:58:06 2022  (00:00)     10.10.16.43
-deploy   pts/1        Sat Nov  5 09:54:47 2022   still logged in                       10.10.16.23
-deploy   pts/0        Sat Nov  5 09:45:45 2022   still logged in                       10.10.14.55
-jaeger   pts/1        Sat Nov  5 09:44:26 2022 - Sat Nov  5 09:54:15 2022  (00:09)     10.10.16.23
-jaeger   pts/0        Sat Nov  5 09:33:50 2022 - Sat Nov  5 09:45:32 2022  (00:11)     10.10.14.55
-reboot   system boot  Sat Nov  5 09:30:39 2022   still running                         0.0.0.0
+deploy   pts/2        Sun Nov  6 07:09:24 2022   still logged in                       10.10.14.145
+jaeger   pts/1        Sun Nov  6 07:08:54 2022   still logged in                       10.10.14.140
+jaeger   pts/0        Sun Nov  6 07:07:46 2022   still logged in                       10.10.16.43
+reboot   system boot  Sun Nov  6 07:06:52 2022   still running                         0.0.0.0
 
-wtmp begins Sat Nov  5 09:30:39 2022
+wtmp begins Sun Nov  6 07:06:52 2022
 
 ╔══════════╣ Last time logon each user
 Username         Port     From             Latest
-jaeger           pts/3    10.10.16.43      Sat Nov  5 09:58:26 -0500 2022
-deploy           pts/1    10.10.16.23      Sat Nov  5 09:54:47 -0500 2022
+jaeger           pts/1    10.10.14.140     Sun Nov  6 07:08:54 -0600 2022
+deploy           pts/2    10.10.14.145     Sun Nov  6 07:09:24 -0600 2022
 
+╔══════════╣ Do not forget to test 'su' as any other user with shell: without password and with their names as password (I can't do it...)
 
 ╔══════════╣ Do not forget to execute 'sudo -l' without password or with valid password (if you know it)!!
 
@@ -923,7 +931,7 @@ drwxr-xr-x 7 root root 4096 Jul 22 12:32 /var/cache/nginx
 
 drwxr-xr-x 7 root root 4096 Jul 22 12:30 /var/lib/nginx
 
-drwxr-xr-x 2 root root 4096 Nov  5 09:30 /var/log/nginx
+drwxr-xr-x 2 root root 4096 Nov  6 07:06 /var/log/nginx
 
 
 ╔══════════╣ Analyzing FastCGI Files (limit 70)
@@ -959,7 +967,7 @@ UsePAM yes
 /home/jaeger/ShoppyApp/node_modules/nssocket/test/fixtures/ryans-key.pem
 /home/jaeger/ShoppyApp/node_modules/proxy-agent/test/ssl-cert-snakeoil.pem
 /var/lib/fwupd/pki/client.pem
-20917PSTORAGE_CERTSBIN
+21616PSTORAGE_CERTSBIN
 
 ══╣ Writable ssh and gpg agents
 /etc/systemd/user/sockets.target.wants/gpg-agent-extra.socket
@@ -1077,8 +1085,8 @@ MwNJjcuntJOU/4pX+UWB
 =lzF1
 -----END PGP SIGNATURE-----
 
-drwx------ 3 deploy deploy 4096 Nov  5 10:09 /home/deploy/.gnupg
-drwx------ 3 jaeger jaeger 4096 Nov  5 10:16 /home/jaeger/.gnupg
+drwx------ 3 deploy deploy 4096 Jul 23 03:31 /home/deploy/.gnupg
+drwx------ 3 jaeger jaeger 4096 Nov  6 07:18 /home/jaeger/.gnupg
 
 ╔══════════╣ Checking if containerd(ctr) is available
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation/containerd-ctr-privilege-escalation
@@ -1108,9 +1116,9 @@ lrwxrwxrwx 1 root root 33 Jul 22 13:25 /etc/systemd/system/sockets.target.wants/
 
 
 ╔══════════╣ Analyzing Interesting logs Files (limit 70)
--rw-r--r-- 1 root root 1821393 Nov  5 10:16 /var/log/nginx/access.log
+-rw-r--r-- 1 root root 44778 Nov  6 07:17 /var/log/nginx/access.log
 
--rw-r--r-- 1 root root 8902 Nov  5 10:02 /var/log/nginx/error.log
+-rw-r--r-- 1 root root 10669 Nov  6 07:10 /var/log/nginx/error.log
 
 ╔══════════╣ Analyzing Other Interesting Files (limit 70)
 -rw-r--r-- 1 root root 3526 Mar 27  2022 /etc/skel/.bashrc
@@ -1216,30 +1224,30 @@ files with acls in searched folders Not Found
 /usr/bin/dockerd-rootless-setuptool.sh
 
 ╔══════════╣ Executable files potentially added by user (limit 70)
-2022-11-05+09:30:52.7664251930 /opt/mattermost/client/manifest.json
-2022-11-05+09:30:52.7624251930 /opt/mattermost/client/main.fee395d4b8af194f7fd2.css
-2022-11-05+09:30:52.7544251930 /opt/mattermost/client/files/code_themes/f757dd511cf939d8c73910416da64ce6.css
-2022-11-05+09:30:52.7544251930 /opt/mattermost/client/files/code_themes/7654b55b2f3442e914047bab6d9617cb.css
-2022-11-05+09:30:52.7504251930 /opt/mattermost/client/files/code_themes/183c8af90a3d7aed5d052c501cc75c77.css
-2022-11-05+09:30:52.4464251960 /opt/mattermost/client/files/code_themes/170be9f6403a22cef635144efcae4d89.css
-2022-11-05+09:30:52.3424251970 /opt/mattermost/client/962.7a17056c1b6b9887cb4e.css
-2022-11-05+09:30:52.3424251970 /opt/mattermost/client/919.6a97a735d643d64a2a45.css
-2022-11-05+09:30:52.2864251970 /opt/mattermost/client/881.aa08de66bb443befda85.css
-2022-11-05+09:30:52.2864251970 /opt/mattermost/client/789.bb6b9733dcccfee57d1a.css
-2022-11-05+09:30:52.2824251970 /opt/mattermost/client/741.53af2af0b63a2c2d5f72.css
-2022-11-05+09:30:52.2824251970 /opt/mattermost/client/716.2e723a8304695cb48838.css
-2022-11-05+09:30:52.2824251970 /opt/mattermost/client/649.7f8826107d3a4bfc52ed.css
-2022-11-05+09:30:52.2824251970 /opt/mattermost/client/461.4710792600ca5498360e.css
-2022-11-05+09:30:52.2664251970 /opt/mattermost/client/443.1a0c73c0ffcf7ce12aa3.css
-2022-11-05+09:30:52.2664251970 /opt/mattermost/client/404.240cef8f44de6ec075a7.css
-2022-11-05+09:30:52.2664251970 /opt/mattermost/client/387.a1204431dc188fd8c52f.css
-2022-11-05+09:30:52.2664251970 /opt/mattermost/client/355.1bb3df976dd038368948.css
-2022-11-05+09:30:52.2664251970 /opt/mattermost/client/31.3869f935cecd17c99235.css
-2022-11-05+09:30:52.2664251970 /opt/mattermost/client/182.d8acdcfdad93455be43c.css
-2022-11-05+09:30:52.2664251970 /opt/mattermost/client/152.ce55e166cf78d6ca294c.css
-2022-11-05+09:30:52.2624251970 /opt/mattermost/client/root.html
-2022-11-05+09:30:52.2624251970 /opt/mattermost/client/120.6e5c7f36c002402a7034.css
-2022-07-22+12:25:26.6118743140 /home/jaeger/shoppy_start.sh
+2022-11-06+07:09:31.9515557310 /home/jaeger/shoppy_start.sh
+2022-11-06+07:07:05.7875536420 /opt/mattermost/client/manifest.json
+2022-11-06+07:07:05.7875536420 /opt/mattermost/client/main.fee395d4b8af194f7fd2.css
+2022-11-06+07:07:05.7795536410 /opt/mattermost/client/files/code_themes/f757dd511cf939d8c73910416da64ce6.css
+2022-11-06+07:07:05.7795536410 /opt/mattermost/client/files/code_themes/7654b55b2f3442e914047bab6d9617cb.css
+2022-11-06+07:07:05.7795536410 /opt/mattermost/client/files/code_themes/183c8af90a3d7aed5d052c501cc75c77.css
+2022-11-06+07:07:05.7795536410 /opt/mattermost/client/files/code_themes/170be9f6403a22cef635144efcae4d89.css
+2022-11-06+07:07:05.4915536370 /opt/mattermost/client/962.7a17056c1b6b9887cb4e.css
+2022-11-06+07:07:05.4915536370 /opt/mattermost/client/919.6a97a735d643d64a2a45.css
+2022-11-06+07:07:05.4875536370 /opt/mattermost/client/881.aa08de66bb443befda85.css
+2022-11-06+07:07:05.4875536370 /opt/mattermost/client/789.bb6b9733dcccfee57d1a.css
+2022-11-06+07:07:05.4875536370 /opt/mattermost/client/741.53af2af0b63a2c2d5f72.css
+2022-11-06+07:07:05.4875536370 /opt/mattermost/client/716.2e723a8304695cb48838.css
+2022-11-06+07:07:05.4875536370 /opt/mattermost/client/649.7f8826107d3a4bfc52ed.css
+2022-11-06+07:07:05.4875536370 /opt/mattermost/client/461.4710792600ca5498360e.css
+2022-11-06+07:07:05.4835536370 /opt/mattermost/client/443.1a0c73c0ffcf7ce12aa3.css
+2022-11-06+07:07:05.4795536370 /opt/mattermost/client/404.240cef8f44de6ec075a7.css
+2022-11-06+07:07:05.4795536370 /opt/mattermost/client/387.a1204431dc188fd8c52f.css
+2022-11-06+07:07:05.4795536370 /opt/mattermost/client/355.1bb3df976dd038368948.css
+2022-11-06+07:07:05.4795536370 /opt/mattermost/client/31.3869f935cecd17c99235.css
+2022-11-06+07:07:05.4795536370 /opt/mattermost/client/182.d8acdcfdad93455be43c.css
+2022-11-06+07:07:05.4795536370 /opt/mattermost/client/152.ce55e166cf78d6ca294c.css
+2022-11-06+07:07:05.4755536370 /opt/mattermost/client/root.html
+2022-11-06+07:07:05.4755536370 /opt/mattermost/client/120.6e5c7f36c002402a7034.css
 2022-07-22+12:05:11.8218091690 /home/jaeger/.nvm/nvm-exec
 2022-07-22+11:39:56.3853249790 /var/lib/colord/storage.db
 2022-07-22+11:39:56.3853249790 /var/lib/colord/mapping.db
@@ -1264,7 +1272,7 @@ drwxrwxr-x 12 mattermost mattermost 4096 Jul 22 14:22 mattermost
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#profiles-files
 total 32
 drwxr-xr-x   2 root root  4096 Jul 22 11:37 .
-drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
+drwxr-xr-x 126 root root 12288 Nov  6 07:07 ..
 -rw-r--r--   1 root root   726 Aug 12  2020 bash_completion.sh
 -rw-r--r--   1 root root   349 Dec 17  2020 im-config_wayland.sh
 -rw-r--r--   1 root root  1384 Feb 17  2021 vte-2.91.sh
@@ -1295,13 +1303,12 @@ drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
 /home/jaeger
 
 ╔══════════╣ Readable files belonging to root and readable by me but not world readable
--rw-r----- 1 root jaeger 33 Nov  5 09:31 /home/jaeger/user.txt
+-rw-r----- 1 root jaeger 33 Nov  6 07:07 /home/jaeger/user.txt
 
 ╔══════════╣ Modified interesting files in the last 5mins (limit 100)
-/tmp/lpout
+/opt/mattermost/logs/mattermost.log
 /var/log/journal/4934849c6786423d86d455e2c11cfd36/user-1000.journal
 /var/log/journal/4934849c6786423d86d455e2c11cfd36/system.journal
-/var/log/journal/4934849c6786423d86d455e2c11cfd36/user-1001.journal
 /var/log/nginx/access.log
 /var/log/messages
 /var/log/syslog
@@ -1311,6 +1318,8 @@ drwxr-xr-x 126 root root 12288 Nov  5 09:30 ..
 /var/log/postgresql/postgresql-13-main.log
 /var/log/kern.log
 /var/log/mongodb/mongod.log
+/var/spool/anacron/cron.weekly
+/home/jaeger/ShoppyApp/exports/lp
 
 ╔══════════╣ Writable log files (logrotten) (limit 50)
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#logrotate-exploitation
@@ -1336,7 +1345,7 @@ Writable: /home/jaeger/.pm2/pm2.log
 
 ╔══════════╣ Files inside /home/jaeger (limit 20)
 total 96
-drwxr-xr-x 19 jaeger jaeger 4096 Jul 22 15:56 .
+drwxr-xr-x 19 jaeger jaeger 4096 Nov  6 07:09 .
 drwxr-xr-x  4 root   root   4096 Jul 22 13:12 ..
 lrwxrwxrwx  1 jaeger jaeger    9 Jul 22 11:42 .bash_history -> /dev/null
 -rw-r--r--  1 jaeger jaeger  220 Jul 22 11:39 .bash_logout
@@ -1347,14 +1356,14 @@ lrwxrwxrwx  1 jaeger jaeger    9 Jul 22 15:56 .dbshell -> /dev/null
 drwxr-xr-x  2 jaeger jaeger 4096 Jul 22 11:40 Desktop
 drwxr-xr-x  2 jaeger jaeger 4096 Jul 22 11:40 Documents
 drwxr-xr-x  2 jaeger jaeger 4096 Jul 22 11:40 Downloads
-drwx------  3 jaeger jaeger 4096 Nov  5 10:16 .gnupg
+drwx------  3 jaeger jaeger 4096 Nov  6 07:18 .gnupg
 drwxr-xr-x  3 jaeger jaeger 4096 Jul 22 11:40 .local
 -rw-------  1 jaeger jaeger    0 Jul 22 15:55 .mongorc.js
 drwxr-xr-x  2 jaeger jaeger 4096 Jul 22 11:40 Music
 drwxr-xr-x  4 jaeger jaeger 4096 Jul 22 12:06 .npm
 drwxr-xr-x  5 jaeger jaeger 4096 Jul 22 12:06 .nvm
 drwxr-xr-x  2 jaeger jaeger 4096 Jul 22 11:40 Pictures
-drwxr-xr-x  5 jaeger jaeger 4096 Nov  5 09:30 .pm2
+drwxr-xr-x  5 jaeger jaeger 4096 Nov  6 07:07 .pm2
 -rw-r--r--  1 jaeger jaeger  807 Jul 22 11:39 .profile
 drwxr-xr-x  2 jaeger jaeger 4096 Jul 22 11:40 Public
 drwxr-xr-x  7 jaeger jaeger 4096 Jul 23 03:42 ShoppyApp
@@ -1362,10 +1371,8 @@ drwxr-xr-x  7 jaeger jaeger 4096 Jul 23 03:42 ShoppyApp
 ╔══════════╣ Files inside others home (limit 20)
 /home/deploy/.bash_logout
 /home/deploy/password-manager
-/home/deploy/linpeas.sh
 /home/deploy/creds.txt
 /home/deploy/.bashrc
-/home/deploy/.python_history
 /home/deploy/.profile
 /home/deploy/password-manager.cpp
 /var/www/html/index.nginx-debian.html
@@ -1576,8 +1583,8 @@ drwxr-xr-x 3 root root 4.0K Jul 22 12:30 ..
 
 ╔══════════╣ All hidden files (not in /sys/ or the ones listed in the previous check) (limit 70)
 -rw-r--r-- 1 root root 0 Feb 22  2021 /usr/share/dictionaries-common/site-elisp/.nosearch
--rw------- 1 postgres postgres 68 Nov  5 09:30 /run/postgresql/.s.PGSQL.5432.lock
--rw-r--r-- 1 root root 0 Nov  5 09:30 /run/network/.ifstate.lock
+-rw------- 1 postgres postgres 68 Nov  6 07:06 /run/postgresql/.s.PGSQL.5432.lock
+-rw-r--r-- 1 root root 0 Nov  6 07:06 /run/network/.ifstate.lock
 -rw-r--r-- 1 root root 220 Mar 27  2022 /etc/skel/.bash_logout
 -rw------- 1 root root 0 Jul 22 11:24 /etc/.pwd.lock
 -rw-r--r-- 1 deploy deploy 220 Mar 27  2022 /home/deploy/.bash_logout
@@ -1648,7 +1655,6 @@ drwxr-xr-x 3 root root 4.0K Jul 22 12:30 ..
 
 ╔══════════╣ Readable files inside /tmp, /var/tmp, /private/tmp, /private/var/at/tmp, /private/var/tmp, and backup folders (limit 70)
 -rwxr-xr-x 1 jaeger jaeger 827827 Oct 22 23:55 /tmp/linpeas.sh
--rw-r--r-- 1 jaeger jaeger 100649 Nov  5 10:17 /tmp/lpout
 -rw-r--r-- 1 root root 335784 Jul 22 14:06 /var/backups/dpkg.status.3.gz
 -rw-r--r-- 1 root root 252 Jul 22 14:05 /var/backups/dpkg.diversions.0
 -rw-r--r-- 1 root root 1380568 Sep 12 13:36 /var/backups/dpkg.status.0
@@ -1663,14 +1669,14 @@ drwxr-xr-x 3 root root 4.0K Jul 22 12:30 ..
 -rw-r--r-- 1 root root 69226 Sep 12 13:36 /var/backups/apt.extended_states.0
 -rw-r--r-- 1 root root 156 Jul 22 14:05 /var/backups/dpkg.diversions.2.gz
 -rw-r--r-- 1 root root 155 Jul 22 11:37 /var/backups/dpkg.statoverride.2.gz
--rw-r--r-- 1 root root 102400 Nov  5 09:35 /var/backups/alternatives.tar.0
+-rw-r--r-- 1 root root 102400 Nov  6 07:11 /var/backups/alternatives.tar.0
 -rw-r--r-- 1 root root 155 Jul 22 11:37 /var/backups/dpkg.statoverride.3.gz
 -rw-r--r-- 1 root root 156 Jul 22 14:05 /var/backups/dpkg.diversions.3.gz
 -rw-r--r-- 1 root root 155 Jul 22 11:37 /var/backups/dpkg.statoverride.4.gz
 -rw-r--r-- 1 root root 32 Aug  7 03:10 /var/backups/dpkg.arch.2.gz
 -rw-r--r-- 1 root root 32 Aug 10 04:57 /var/backups/dpkg.arch.1.gz
 -rw-r--r-- 1 root root 4000 Jul 22 11:50 /var/backups/alternatives.tar.2.gz
--rw-r--r-- 1 root root 0 Nov  5 09:35 /var/backups/dpkg.arch.0
+-rw-r--r-- 1 root root 0 Nov  6 07:11 /var/backups/dpkg.arch.0
 -rw-r--r-- 1 root root 366027 Jul 22 11:39 /var/backups/dpkg.status.4.gz
 -rw-r--r-- 1 root root 32 Jul 22 11:50 /var/backups/dpkg.arch.4.gz
 -rw-r--r-- 1 root root 32 Jul 23 02:33 /var/backups/dpkg.arch.3.gz
@@ -1691,8 +1697,8 @@ drwxr-xr-x 3 root root 4.0K Jul 22 12:30 ..
 /tmp/.font-unix
 /tmp/.ICE-unix
 /tmp/linpeas.sh
-/tmp/lpout
 /tmp/.Test-unix
+/tmp/VMwareDnD
 #)You_can_write_even_more_files_inside_last_directory
 
 /usr/bin/bsondump

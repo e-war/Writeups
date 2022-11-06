@@ -163,11 +163,18 @@ So aside from grabbing the user.txt from the users (jaeger)'s home directory whi
 I'm gonna start as usual by downloading linpeas, which i've included in this directory seperately.
 
 #### Exploitation shortlist
+
 ```
 ╔══════════╣ CVEs Check
 Potentially Vulnerable to CVE-2022-0847
 
 Potentially Vulnerable to CVE-2022-2588
+
+
+╔══════════╣ PATH
+╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#writable-path-abuses
+/home/jaeger/.nvm/versions/node/v18.6.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+New path exported: /home/jaeger/.nvm/versions/node/v18.6.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/local/sbin:/usr/sbin:/sbin
 
 ╔══════════╣ Executing Linux Exploit Suggester
 ╚ https://github.com/mzet-/linux-exploit-suggester
@@ -193,68 +200,13 @@ Potentially Vulnerable to CVE-2022-2588
    Tags: ubuntu=10|11|12|13|14|15|16|17|18|19|20|21,[ debian=7|8|9|10|11 ],fedora,manjaro
    Download URL: https://codeload.github.com/berdav/CVE-2021-4034/zip/main
 
-[+] [CVE-2022-32250] nft_object UAF (NFT_MSG_NEWSET)
+╔══════════╣ Checking 'sudo -l', /etc/sudoers, and /etc/sudoers.d
+╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#sudo-and-suid
+Matching Defaults entries for jaeger on shoppy:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
 
-   Details: https://research.nccgroup.com/2022/09/01/settlers-of-netlink-exploiting-a-limited-uaf-in-nf_tables-cve-2022-32250/
-https://blog.theori.io/research/CVE-2022-32250-linux-kernel-lpe-2022/
-   Exposure: less probable
-   Tags: ubuntu=(22.04){kernel:5.15.0-27-generic}
-   Download URL: https://raw.githubusercontent.com/theori-io/CVE-2022-32250-exploit/main/exp.c
-   Comments: kernel.unprivileged_userns_clone=1 required (to obtain CAP_NET_ADMIN)
-
-[+] [CVE-2022-2586] nft_object UAF
-
-   Details: https://www.openwall.com/lists/oss-security/2022/08/29/5
-   Exposure: less probable
-   Tags: ubuntu=(20.04){kernel:5.12.13}
-   Download URL: https://www.openwall.com/lists/oss-security/2022/08/29/5/1
-   Comments: kernel.unprivileged_userns_clone=1 required (to obtain CAP_NET_ADMIN)
-
-[+] [CVE-2021-3156] sudo Baron Samedit
-
-   Details: https://www.qualys.com/2021/01/26/cve-2021-3156/baron-samedit-heap-based-overflow-sudo.txt
-   Exposure: less probable
-   Tags: mint=19,ubuntu=18|20, debian=10
-   Download URL: https://codeload.github.com/blasty/CVE-2021-3156/zip/main
-
-[+] [CVE-2021-3156] sudo Baron Samedit 2
-
-   Details: https://www.qualys.com/2021/01/26/cve-2021-3156/baron-samedit-heap-based-overflow-sudo.txt
-   Exposure: less probable
-   Tags: centos=6|7|8,ubuntu=14|16|17|18|19|20, debian=9|10
-   Download URL: https://codeload.github.com/worawit/CVE-2021-3156/zip/main
-
-[+] [CVE-2021-22555] Netfilter heap out-of-bounds write
-
-   Details: https://google.github.io/security-research/pocs/linux/cve-2021-22555/writeup.html
-   Exposure: less probable
-   Tags: ubuntu=20.04{kernel:5.8.0-*}
-   Download URL: https://raw.githubusercontent.com/google/security-research/master/pocs/linux/cve-2021-22555/exploit.c
-   ext-url: https://raw.githubusercontent.com/bcoles/kernel-exploits/master/CVE-2021-22555/exploit.c
-   Comments: ip_tables kernel module must be loaded
-
-[+] [CVE-2017-0358] ntfs-3g-modprobe
-
-   Details: https://bugs.chromium.org/p/project-zero/issues/detail?id=1072
-   Exposure: less probable
-   Tags: ubuntu=16.04{ntfs-3g:2015.3.14AR.1-1build1},debian=7.0{ntfs-3g:2012.1.15AR.5-2.1+deb7u2},debian=8.0{ntfs-3g:2014.2.15AR.2-1+deb8u2}
-   Download URL: https://github.com/offensive-security/exploit-database-bin-sploits/raw/master/bin-sploits/41356.zip
-   Comments: Distros use own versioning scheme. Manual verification needed. Linux headers must be installed. System must have at least two CPU cores.
-
-╔══════════╣ Users with console
-deploy:x:1001:1001::/home/deploy:/bin/sh
-jaeger:x:1000:1000:jaeger,,,:/home/jaeger:/bin/bash
-mattermost:x:998:997::/home/mattermost:/bin/sh
-postgres:x:119:127:PostgreSQL administrator,,,:/var/lib/postgresql:/bin/bash
-root:x:0:0:root:/root:/bin/bash
-
-
-══╣ Possible private SSH keys were found!
-/home/jaeger/.nvm/versions/node/v18.6.0/lib/node_modules/npm/docs/output/using-npm/config.html
-/home/jaeger/.nvm/versions/node/v18.6.0/lib/node_modules/npm/docs/content/using-npm/config.md
-/home/jaeger/.nvm/versions/node/v18.6.0/lib/node_modules/npm/lib/utils/config/definitions.js
-/home/jaeger/ShoppyApp/node_modules/proxy-agent/test/ssl-cert-snakeoil.key
-/home/jaeger/ShoppyApp/node_modules/nssocket/test/fixtures/ryans-key.pem
+User jaeger may run the following commands on shoppy:
+    (deploy) /home/deploy/password-manager
 
 ╔══════════╣ .sh files in path
 ╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#script-binaries-in-path
@@ -262,15 +214,67 @@ root:x:0:0:root:/root:/bin/bash
 /usr/bin/gettext.sh
 /usr/bin/dockerd-rootless-setuptool.sh
 
+
 ╔══════════╣ Files inside others home (limit 20)
 /home/deploy/.bash_logout
 /home/deploy/password-manager
-/home/deploy/linpeas.sh
 /home/deploy/creds.txt
 /home/deploy/.bashrc
-/home/deploy/.python_history
 /home/deploy/.profile
 /home/deploy/password-manager.cpp
 /var/www/html/index.nginx-debian.html
 /var/lib/postgresql/.psql_history
 ```
+Being able to run a file as a different user is always interesting, so we might as well see what the program does 
+```
+cat /home/deploy/password-manager
+ELF> @H@@8
+          @@@@h���`
+                   `
+                    ��   ���-�=�=�P�-�=����DDP�td� � � LLQ�tdR�td�-�=�=PP/lib64/ld-linux-x86-64.so.2GNU@
+)�GNU�▒�e�ms��                                                                                          .�Ҵ��43H
+              C-�����fFr�S�w �� , N�"�▒�A▒#▒�@__gmon_start___ITM_deregisterTMCloneTable_ITM_registerTMCloneTable_ZNSaIcED1Ev_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC1Ev_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6__ZSt3cin_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC1EPKcRKS3__ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEpLEPKc_ZNSt8ios_base4InitD1Ev_ZNSolsEPFRSoS_E__gxx_personality_v0_ZNSaIcEC1Ev_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc_ZNSt8ios_base4InitC1Ev_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEED1Ev_ZSt4cout_ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7compareERKS4__ZStrsIcSt11char_traitsIcESaIcEERSt13basic_istreamIT_T0_ES7_RNSt7__cxx1112basic_stringIS4_S5_T1_EE_Unwind_Resume__cxa_atexitsystem__cxa_finalize__libc_start_mainlibstdc++.so.6libgcc_s.so.1libc.so.6GCC_3.0GLIBC_2.2.5CXXABI_1.3GLIBCXX_3.4GLIBCXX_3.4.21( P&y
+                                                                                                                                                                                                        @6 u▒i  HӯkTt)_q��k��4����@�?�?�?�?�?�?�?�@�@▒�A▒@ @(@0@8@@@HP@     X@
+`@
+  h@
+x@�@H�H��/H��t��H���5�/�%�/@�%�/h������%�/h������%�/h������%�/h������%�/h������%�/h������%�/h������%�/h�p����%�/�`����%�/h      �P����%�/h
+�@����%�/h
+          �0����%�/h
+H�=���.�DH�=I/H�B/H9�tH�n.H��t  �����H�=/H�5/H)�H��H��?H��H�H��tH�E.H����fD���=11u/UH�=�-H��t
+���H��H�S,H��H������H�E�H�������H�E�H����������<H��H�E�H��������H��H�E�H���w����H��H�E�H���f���H��H�����h����   1]�����{���UH��SH��XH�5�
+                                                                                                      ���H�]���UH��H���}��u��}�u2�}���u)H�=�.�����H�u,H�5�.H��+H���/������UH�����������]��AWL�=W)AVI��AUI��ATA��UH�-P)SL)�H������H��t�L��L��D��A��H��H9�u�H�[]A\A]A^A_��H�H��Welcome to Josh password manager!Please enter your master password: S******eAccess granted! Here is creds !cat /home/deploy/creds.txtAccess denied! This incident will be reported !@����0����@���h%����
+                                                                                                                                                                                                                                       ��� T���@p���`�����zRx
+                Rx
+                 ▒J
+                   �?▒;*3$"Dh��zPLRx��
+E��                                  �C
+D �����IA�C
+�
+P���A�C
+D���]B�I▒�E �E(�D0�H8�G@j8A0A(B B▒B, ������������4�(6
+��=▒�����8
+z
+ ▒@P
+    �  P        ▒������o@       ���o���o
+        ���o�=6FVfv���������@GCC: (Debian 10.2.1-6) 10.2.1 20210110��8�
+       @                �
+
+
+
+ � � 0!�"�=�=�=�?▒@�@▒�@
+                        ▒�BC�=jv�=��� �▒�B��I4��▒�"��&� 
+                                                        9�=B�=S�=f▒@|��@� �@� �"�H�@U�!������� +1u���@�)▒�@?��@N▒C��▒�@�P]%E ax���▒�A▒�� � �crtstuff.cderegister_tm_clones__do_global_dtors_auxcompleted.0__do_global_dtors_aux_fini_array_entryframe_dummy__frame_dummy_init_array_entrypassword-manager.cpp_ZStL19piecewise_construct_ZStL8__ioinit_Z41__static_initialization_and_destruction_0ii_GLOBAL__sub_I_main__FRAME_END____GNU_EH_FRAME_HDR_DYNAMIC__init_array_end__init_array_start_GLOBAL_OFFSET_TABLE__ZNKSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7compareERKS4_@GLIBCXX_3.4.21_edata_IO_stdin_used__cxa_finalize@GLIBC_2.2.5_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_@GLIBCXX_3.4__dso_handle_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEED1Ev@GLIBCXX_3.4.21DW.ref.__gxx_personality_v0system@GLIBC_2.2.5__cxa_atexit@GLIBC_2.2.5_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEpLEPKc@GLIBCXX_3.4.21_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@GLIBCXX_3.4_ZNSolsEPFRSoS_E@GLIBCXX_3.4_ZNSaIcED1Ev@GLIBCXX_3.4__TMC_END___ZStrsIcSt11char_traitsIcESaIcEERSt13basic_istreamIT_T0_ES7_RNSt7__cxx1112basic_stringIS4_S5_T1_EE@GLIBCXX_3.4.21_ZSt4cout@GLIBCXX_3.4_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC1EPKcRKS3_@GLIBCXX_3.4.21__data_start_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC1Ev@GLIBCXX_3.4.21__bss_start_ZNSt8ios_base4InitC1Ev@GLIBCXX_3.4__libc_csu_init__gxx_personality_v0@CXXABI_1.3_ITM_deregisterTMCloneTable_Unwind_Resume@GCC_3.0_ZNSaIcEC1Ev@GLIBCXX_3.4__libc_csu_fini_ZSt3cin@GLIBCXX_3.4__libc_start_main@GLIBC_2.2.5__gmon_start___ITM_registerTMCloneTable_ZNSt8ios_base4InitD1Ev@GLIBCXX_3.4.symtab.strtab.shstrtab.interp.note.gnu.build-id.note.ABI-tag.gnu.hash.dynsym.dynstr.gnu.version.gnu.version_r.rela.dyn.rela.plt.init.plt.got.text.fini.rodata.eh_frame_hdr.eh_frame.gcc_except_table.init_array.fini_array.dynamic.got.plt.data.bss.comment�� D��No
+
+```
+While this looks terrible, catting the program actually gives us more information than strings, in this cas we can see the password used in this file gets leaked (although i've censored it)
+
+```
+jaeger@shoppy:/tmp$ sudo --user=deploy /home/deploy/password-manager
+Welcome to Josh password manager!
+Please enter your master password: S******e
+Access granted! Here is creds !
+Deploy Creds :
+username: deploy
+password: D********!
+```
+And with that we have another user's credentials!
