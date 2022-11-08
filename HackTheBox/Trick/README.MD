@@ -222,6 +222,10 @@ Well thats rude! They're refusing to allow us to search, no wonder gobuster foun
 We already have a few leads in terms of OpenSSH and ISC BIND, a good source of already exploited vulnerabilities is a tool called `searchsploit` which i believe just searches the entire exploitdb database
 
 ```
+searchsploit OpenSSH                                                                                                                                    ✔ 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                                                                                                                    |  Path
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
 Debian OpenSSH - (Authenticated) Remote SELinux Privilege Escalation                                                                                                              | linux/remote/6094.txt
 Dropbear / OpenSSH Server - 'MAX_UNAUTH_CLIENTS' Denial of Service                                                                                                                | multiple/dos/1572.pl
 FreeBSD OpenSSH 3.5p1 - Remote Command Execution                                                                                                                                  | freebsd/remote/17462.txt
@@ -248,5 +252,50 @@ OpenSSH SCP Client - Write Arbitrary Files                                      
 OpenSSH/PAM 3.6.1p1 - 'gossh.sh' Remote Users Ident                                                                                                                               | linux/remote/26.sh
 OpenSSH/PAM 3.6.1p1 - Remote Users Discovery Tool                                                                                                                                 | linux/remote/25.c
 OpenSSHd 7.2p2 - Username Enumeration                                                                                                                                             | linux/remote/40113.txt
-Portable OpenSSH 3.6.1p-PAM/4.1-SuSE - Timing Attack       
+Portable OpenSSH 3.6.1p-PAM/4.1-SuSE - Timing Attack                                                                                                                              | multiple/remote/3303.sh
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+```
+```
+searchsploit postfix                                                                                                                                    ✔ 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                                                                                                                    |  Path
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+gld 1.4 - Postfix Greylisting Daemon Remote Format String                                                                                                                         | linux/remote/934.c
+Postfix 1.1.x - Denial of Service (1)                                                                                                                                             | linux/dos/22981.c
+Postfix 1.1.x - Denial of Service (2)                                                                                                                                             | linux/dos/22982.pl
+Postfix 2.6-20080814 - 'symlink' Local Privilege Escalation                                                                                                                       | linux/local/6337.sh
+Postfix < 2.4.9/2.5.5/2.6-20080902 - '.forward' Local Denial of Service                                                                                                           | multiple/dos/6472.c
+Postfix SMTP 4.2.x < 4.2.48 - 'Shellshock' Remote Command Injection                                                                                                               | linux/remote/34896.py
+Salim Gasmi GLD (Greylisting Daemon) - Postfix Buffer Overflow (Metasploit)                                                                                                       | linux/remote/16841.rb
+Salim Gasmi GLD (Greylisting Daemon) 1.0 < 1.4 - Postfix Greylisting Buffer Overflow (Metasploit)                                                                                 | linux/remote/10023.rb
+Salim Gasmi GLD (Greylisting Daemon) 1.x - Postfix Greylisting Daemon Buffer Overflow                                                                                             | linux/remote/25392.c
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+```
+
+```
+searchsploit ISC BIND 9                                                                                                                       6 ✘  19s  
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                                                                                                                    |  Path
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+ISC BIND (Linux/BSD) - Remote Buffer Overflow (1)                                                                                                                                 | linux/remote/19111.c
+ISC BIND (Multiple OSes) - Remote Buffer Overflow (2)                                                                                                                             | linux/remote/19112.c
+ISC BIND 4.9.7 -T1B - named SIGINT / SIGIOT Symlink                                                                                                                               | linux/local/19072.txt
+ISC BIND 4.9.7/8.x - Traffic Amplification and NS Route Discovery                                                                                                                 | multiple/remote/19749.txt
+ISC BIND 8 - Remote Cache Poisoning (1)                                                                                                                                           | linux/remote/30535.pl
+ISC BIND 8 - Remote Cache Poisoning (2)                                                                                                                                           | linux/remote/30536.pl
+ISC BIND 8.1 - Host Remote Buffer Overflow                                                                                                                                        | unix/remote/20374.c
+ISC BIND 8.2.2 / IRIX 6.5.17 / Solaris 7.0 - NXT Overflow / Denial of Service                                                                                                     | unix/dos/19615.c
+ISC BIND 8.2.2-P5 - Denial of Service                                                                                                                                             | linux/dos/20388.txt
+ISC BIND 8.2.x - 'TSIG' Remote Stack Overflow (1)                                                                                                                                 | linux/remote/277.c
+ISC BIND 8.2.x - 'TSIG' Remote Stack Overflow (2)                                                                                                                                 | linux/remote/279.c
+ISC BIND 8.2.x - 'TSIG' Remote Stack Overflow (3)                                                                                                                                 | solaris/remote/280.c
+ISC BIND 8.2.x - 'TSIG' Remote Stack Overflow (4)                                                                                                                                 | linux/remote/282.c
+ISC BIND 8.3.x - OPT Record Large UDP Denial of Service                                                                                                                           | linux/dos/22011.c
+ISC BIND 9 - Denial of Service                                                                                                                                                    | multiple/dos/40453.py
+ISC BIND 9 - Remote Dynamic Update Message Denial of Service (PoC)                                                                                                                | multiple/dos/9300.c
+ISC BIND 9 - TKEY (PoC)                                                                                                                                                           | multiple/dos/37721.c
+ISC BIND 9 - TKEY Remote Denial of Service (PoC)                                                                                                                                  | multiple/dos/37723.py
+Microsoft Windows Kernel - 'win32k!NtQueryCompositionSurfaceBinding' Stack Memory Disclosure                                                                                      | windows/dos/42750.cpp
+Zabbix 2.0.5 - Cleartext ldap_bind_Password Password Disclosure (Metasploit)                                                                                                      | php/webapps/36157.rb
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
 ```
