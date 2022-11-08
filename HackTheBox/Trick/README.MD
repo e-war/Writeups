@@ -69,6 +69,7 @@ So looking up these services online now seems like a good idea to see if there a
 ##### ISC BIND 9.11.5-P4-5.1
 - https://vulmon.com/vulnerabilitydetails?qid=CVE-2021-25216&scoretype=cvssv3
 
+
 This Nginx version doesn't seem to have any known vulnerabilities 
 #### Web Content
 Next i'll move onto the web site hosted and gather as much information on any unlinked pages/directories and any subdomains of the site.
@@ -209,7 +210,7 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 well lets try and query the DNS server directly...
 
 ```
-nslookup debian. debian.localdomain                                                                                                                   1 ✘ 
+nslookup debian. debian.localdomain
 Server:         debian.localdomain
 Address:        10.10.11.166#53
 
@@ -217,3 +218,35 @@ Address:        10.10.11.166#53
 ```
 Well thats rude! They're refusing to allow us to search, no wonder gobuster found nothing..
 
+### Vulnerability & Exploit analysis 
+We already have a few leads in terms of OpenSSH and ISC BIND, a good source of already exploited vulnerabilities is a tool called `searchsploit` which i believe just searches the entire exploitdb database
+
+```
+Debian OpenSSH - (Authenticated) Remote SELinux Privilege Escalation                                                                                                              | linux/remote/6094.txt
+Dropbear / OpenSSH Server - 'MAX_UNAUTH_CLIENTS' Denial of Service                                                                                                                | multiple/dos/1572.pl
+FreeBSD OpenSSH 3.5p1 - Remote Command Execution                                                                                                                                  | freebsd/remote/17462.txt
+glibc-2.2 / openssh-2.3.0p1 / glibc 2.1.9x - File Read                                                                                                                            | linux/local/258.sh
+Novell Netware 6.5 - OpenSSH Remote Stack Overflow                                                                                                                                | novell/dos/14866.txt
+OpenSSH 1.2 - '.scp' File Create/Overwrite                                                                                                                                        | linux/remote/20253.sh
+OpenSSH 2.3 < 7.7 - Username Enumeration                                                                                                                                          | linux/remote/45233.py
+OpenSSH 2.3 < 7.7 - Username Enumeration (PoC)                                                                                                                                    | linux/remote/45210.py
+OpenSSH 2.x/3.0.1/3.0.2 - Channel Code Off-by-One                                                                                                                                 | unix/remote/21314.txt
+OpenSSH 2.x/3.x - Kerberos 4 TGT/AFS Token Buffer Overflow                                                                                                                        | linux/remote/21402.txt
+OpenSSH 3.x - Challenge-Response Buffer Overflow (1)                                                                                                                              | unix/remote/21578.txt
+OpenSSH 3.x - Challenge-Response Buffer Overflow (2)                                                                                                                              | unix/remote/21579.txt
+OpenSSH 4.3 p1 - Duplicated Block Remote Denial of Service                                                                                                                        | multiple/dos/2444.sh
+OpenSSH 6.8 < 6.9 - 'PTY' Local Privilege Escalation                                                                                                                              | linux/local/41173.c
+OpenSSH 7.2 - Denial of Service                                                                                                                                                   | linux/dos/40888.py
+OpenSSH 7.2p1 - (Authenticated) xauth Command Injection                                                                                                                           | multiple/remote/39569.py
+OpenSSH 7.2p2 - Username Enumeration                                                                                                                                              | linux/remote/40136.py
+OpenSSH < 6.6 SFTP (x64) - Command Execution                                                                                                                                      | linux_x86-64/remote/45000.c
+OpenSSH < 6.6 SFTP - Command Execution                                                                                                                                            | linux/remote/45001.py
+OpenSSH < 7.4 - 'UsePrivilegeSeparation Disabled' Forwarded Unix Domain Sockets Privilege Escalation                                                                              | linux/local/40962.txt
+OpenSSH < 7.4 - agent Protocol Arbitrary Library Loading                                                                                                                          | linux/remote/40963.txt
+OpenSSH < 7.7 - User Enumeration (2)                                                                                                                                              | linux/remote/45939.py
+OpenSSH SCP Client - Write Arbitrary Files                                                                                                                                        | multiple/remote/46516.py
+OpenSSH/PAM 3.6.1p1 - 'gossh.sh' Remote Users Ident                                                                                                                               | linux/remote/26.sh
+OpenSSH/PAM 3.6.1p1 - Remote Users Discovery Tool                                                                                                                                 | linux/remote/25.c
+OpenSSHd 7.2p2 - Username Enumeration                                                                                                                                             | linux/remote/40113.txt
+Portable OpenSSH 3.6.1p-PAM/4.1-SuSE - Timing Attack       
+```
