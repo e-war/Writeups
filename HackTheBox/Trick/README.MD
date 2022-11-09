@@ -42,7 +42,7 @@ So OpenSSH, a mail server, ISC BIND 9 which is a DNS system, and a nginx web sit
 
 I also did a UDP scan on the host with the nmap -sU flag
 ```
-sudo nmap -sV -sC -Pn 10.10.11.166 -sU                                                                                                                                               1 ✘ 
+sudo nmap -sV -sC -Pn 10.10.11.166 -sU                                                                                                                                          
 [sudo] password for elliot: 
 Starting Nmap 7.92 ( https://nmap.org ) at 2022-11-08 13:15 GMT
 Stats: 0:03:35 elapsed; 0 hosts completed (1 up), 1 undergoing UDP Scan
@@ -63,8 +63,9 @@ Just ISC BIND again.
 So a linux box as seen bind thinks deb10u7 and openSSH thinks deb10u2 and the hostname is debian.localdomain. Debian 10 seems likely. 
 
 So looking up these services online now seems like a good idea to see if there are any versions here out of date or even vulnerable
-##### OpenSSH 7.9p1 Debian 10+deb10u2
-- https://security-tracker.debian.org/tracker/CVE-2019-6111
+
+##### ~ OpenSSH 7.9p1 Debian 10+deb10u2
+~ - https://security-tracker.debian.org/tracker/CVE-2019-6111
 
 ##### ISC BIND 9.11.5-P4-5.1
 - https://vulmon.com/vulnerabilitydetails?qid=CVE-2021-25216&scoretype=cvssv3
@@ -97,6 +98,32 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
                                                                                  
 ===============================================================
 2022/11/08 13:50:06 Finished
+===============================================================
+
+```
+lets check that assets folder too.
+```
+./gobuster dir -u http://10.10.11.166/assets/ -w ../Lists/SecLists/Discovery/Web-Content/raft-medium-words.txt
+===============================================================
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://10.10.11.166/assets/
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                ../Lists/SecLists/Discovery/Web-Content/raft-medium-words.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.1.0
+[+] Timeout:                 10s
+===============================================================
+2022/11/08 15:14:08 Starting gobuster in directory enumeration mode
+===============================================================
+/img                  (Status: 301) [Size: 185] [--> http://10.10.11.166/assets/img/]
+/.                    (Status: 301) [Size: 185] [--> http://10.10.11.166/assets/./]  
+/mp4                  (Status: 301) [Size: 185] [--> http://10.10.11.166/assets/mp4/]
+                                                                                     
+===============================================================
+2022/11/08 15:17:26 Finished
 ===============================================================
 
 ```
@@ -298,4 +325,27 @@ ISC BIND 9 - TKEY Remote Denial of Service (PoC)                                
 Microsoft Windows Kernel - 'win32k!NtQueryCompositionSurfaceBinding' Stack Memory Disclosure                                                                                      | windows/dos/42750.cpp
 Zabbix 2.0.5 - Cleartext ldap_bind_Password Password Disclosure (Metasploit)                                                                                                      | php/webapps/36157.rb
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+```
+
+#### Exploitation
+
+```
+############ FUZZING debian.localdomain ####
+# Found 7 /( 495 / 822 )
+# Please be patient, this program is slow:
+# Trying: anonymous
+# Verified Users:
+#"root@debian.localdomain"
+
+#"BACKUP@debian.localdomain"
+
+#"MAIL@debian.localdomain"
+
+#"NEWS@debian.localdomain"
+
+#"POSTMASTER@debian.localdomain"
+
+#"ROOT@debian.localdomain"
+
+#"SYS@debian.localdomain"
 ```
