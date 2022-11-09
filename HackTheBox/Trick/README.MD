@@ -64,8 +64,9 @@ So a linux box as seen bind thinks deb10u7 and openSSH thinks deb10u2 and the ho
 
 So looking up these services online now seems like a good idea to see if there are any versions here out of date or even vulnerable
 
-~~ OpenSSH 7.9p1 Debian 10+deb10u2 ~~
-~~ https://security-tracker.debian.org/tracker/CVE-2019-6111 ~~
+##### ~OpenSSH 7.9p1 Debian 10+deb10u2~
+
+- ~https://security-tracker.debian.org/tracker/CVE-2019-6111~
 
 ##### ISC BIND 9.11.5-P4-5.1
 - https://vulmon.com/vulnerabilitydetails?qid=CVE-2021-25216&scoretype=cvssv3
