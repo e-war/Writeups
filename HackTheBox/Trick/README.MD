@@ -178,7 +178,8 @@ RCPT TO:jkgemovdoqahscednq@tmmwj.net
 454 4.7.1 <jkgemovdoqahscednq@tmmwj.net>: Relay access denied
 
 ```
-> There may be a way to generate a list of local server usernames using the SFTP server by asking the server to verify the local users email address which is created automatically when the account is
+> There may be a way to generate a list of local server usernames using the SFTP server by asking the server to verify the local users email address which is created automatically when the account is...
+
 > There is actually, and it was so simple i made a tool to do it. it's terrible and you shouldn't use it but i thought i may as well get some practice in (https://github.com/e-war/SMTFuzz) 
 
 
@@ -464,6 +465,7 @@ But it seems like just after this we are redirected yet again to the login page.
 We can simply edit the status code in this response and view the page as normal, i've set up a filter in burpsuite to do this automatically
 
 ![burpsuite settings](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/11Trick_Burpsettings.png)
+![Second site access](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/12Trick_Second_site_landing.png)
 
 ###### SAVE
 ```
