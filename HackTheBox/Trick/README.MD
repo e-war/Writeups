@@ -455,6 +455,7 @@ Hmm interesting, so it looks like SQL may not be typically injected on, but we g
 
 ![analysing login post request](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/6Trick_login_request.png)
 ![analysing login post request 2](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/7Trick_login_response.png)
+so edit this to just return 1 for example?
 ![analysing login post request 3](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/8Ttrick_login_response_edited.png)
 ![analysing login post request 4](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/9Trick_login_forwarded.png)
 
@@ -466,6 +467,10 @@ We can simply edit the status code in this response and view the page as normal,
 
 ![burpsuite settings](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/11Trick_Burpsettings.png)
 ![Second site access](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/12Trick_Second_site_landing.png)
+
+And we're in!
+
+Looking around the site is interesting enough but there's really not much to exploit directly on the page itself, but i want to try one more thing with the login page, sqlmap!
 
 ###### SAVE
 ```
