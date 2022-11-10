@@ -62,17 +62,9 @@ Nmap done: 1 IP address (1 host up) scanned in 1324.10 seconds
 Just ISC BIND again.
 So a linux box as seen bind thinks deb10u7 and openSSH thinks deb10u2 and the hostname is debian.localdomain. Debian 10 seems likely. 
 
-So looking up these services online now seems like a good idea to see if there are any versions here out of date or even vulnerable
-
-##### ~OpenSSH 7.9p1 Debian 10+deb10u2~
-
-- ~https://security-tracker.debian.org/tracker/CVE-2019-6111~
-
-##### ISC BIND 9.11.5-P4-5.1
-- https://vulmon.com/vulnerabilitydetails?qid=CVE-2021-25216&scoretype=cvssv3
+This Nginx version doesn't seem to have any known vulnerabilities but some of the other services look like they could make interesting targets (below) 
 
 
-This Nginx version doesn't seem to have any known vulnerabilities 
 #### Web Content
 Next i'll move onto the web site hosted and gather as much information on any unlinked pages/directories and any subdomains of the site.
 For this i'll use gobuster
@@ -159,6 +151,12 @@ A "Coming Soon" page with a form for emails, i did try with a 10 min email addre
 
 Nothing really super interesting here, and so i'll look elsewhere
 
+#### SSH
+
+##### OpenSSH 7.9p1 Debian 10+deb10u2
+
+- ~https://security-tracker.debian.org/tracker/CVE-2019-6111~ MITM attack replacing files in transmission
+
 #### Mail system
 
 Looks like a simple postfix setup, we can telnet and we don't need authorization to do anything. But we can't send emails to external domains.
@@ -180,7 +178,10 @@ RCPT TO:jkgemovdoqahscednq@tmmwj.net
 454 4.7.1 <jkgemovdoqahscednq@tmmwj.net>: Relay access denied
 
 ```
-There may be a way to generate a list of local server usernames using the SFTP server by asking the server to verify the local users email address which is created automatically when the account is 
+> There may be a way to generate a list of local server usernames using the SFTP server by asking the server to verify the local users email address which is created automatically when the account is
+> There is actually, and it was so simple i made a tool to do it. it's terrible and you shouldn't use it but i thought i may as well get some practice in (https://github.com/e-war/SMTFuzz) 
+
+
 ```
 VRFY
 501 5.5.4 Syntax: VRFY address [SMTPUTF8]
@@ -214,6 +215,11 @@ TEST!!!
 But that's about all i think i can get out of the SMTP system, i'll take a quick look at the DNS system next
 
 #### DNS System
+
+##### ISC BIND 9.11.5-P4-5.1
+- https://vulmon.com/vulnerabilitydetails?qid=CVE-2021-25216&scoretype=cvssv3
+- https://www.cvedetails.com/cve/CVE-2021-25216/
+
 So ISC BIND... I have to say i'm not the best with DNS lookups, gobuster doesn't really yield much for subdomains of the host:
 ```
 gobuster-linux-amd64/gobuster dns -d debian.localdomain. -r debian.localdomain. -w ./Lists/SecLists/Discovery/DNS/bitquark-subdomains-top100000.txt
@@ -236,15 +242,102 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
 ```
 
 well lets try and query the DNS server directly...
+For this im gonna use dig, i'm still learning it at the moment but a simple reverse query with the `-x` flag reveals a dns record of trick.htb. (@ just specifies the server so we don't use our actual DNS)
+```
+dig -x 10.10.11.166 @10.10.11.166                                                                                                                                                             10 ✘ 
+
+; <<>> DiG 9.18.8 <<>> -x 10.10.11.166 @10.10.11.166
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 63555
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 3
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+; COOKIE: faacaf2c3ede4870e45b9367636cdc9c9cd9bbd75a6e794f (good)
+;; QUESTION SECTION:
+;166.11.10.10.in-addr.arpa.     IN      PTR
+
+;; ANSWER SECTION:
+166.11.10.10.in-addr.arpa. 604800 IN    PTR     trick.htb.
+
+;; AUTHORITY SECTION:
+11.10.10.in-addr.arpa.  604800  IN      NS      trick.htb.
+
+;; ADDITIONAL SECTION:
+trick.htb.              604800  IN      A       127.0.0.1
+trick.htb.              604800  IN      AAAA    ::1
+
+;; Query time: 13 msec
+;; SERVER: 10.10.11.166#53(10.10.11.166) (UDP)
+;; WHEN: Thu Nov 10 11:12:28 GMT 2022
+;; MSG SIZE  rcvd: 163
+```
+So actually this server is known both as:
+-   trick.htb.
+-   debian.localdomain.
+
+So lets add trick.htb to our host file and now i'll use dig (+dns) in a way i haven't before, with the `axfr` addition, AXFR is a query for the DNS Zone, which is a copy of ALL the subdomains (+ records), it's used for when you want another dns server to copy a master copy of the zone, and it's usually protected to only allow certain known IP address' to get it. But this server doesn't! (For the record, if it did you can try IP spoofing and failing that i would've just gone back to gobuster with our new domain name and try a wordlist again.)  
 
 ```
-nslookup debian. debian.localdomain
-Server:         debian.localdomain
-Address:        10.10.11.166#53
+dig @10.10.11.166 trick.htb axfr                                                                                                                                                                 
 
-** server can't find debian: REFUSED
+; <<>> DiG 9.18.8 <<>> @10.10.11.166 trick.htb axfr
+; (1 server found)
+;; global options: +cmd
+trick.htb.              604800  IN      SOA     trick.htb. root.trick.htb. 5 604800 86400 2419200 604800
+trick.htb.              604800  IN      NS      trick.htb.
+trick.htb.              604800  IN      A       127.0.0.1
+trick.htb.              604800  IN      AAAA    ::1
+preprod-payroll.trick.htb. 604800 IN    CNAME   trick.htb.
+trick.htb.              604800  IN      SOA     trick.htb. root.trick.htb. 5 604800 86400 2419200 604800
+;; Query time: 83 msec
+;; SERVER: 10.10.11.166#53(10.10.11.166) (TCP)
+;; WHEN: Thu Nov 10 11:26:38 GMT 2022
+;; XFR size: 6 records (messages 1, bytes 231)
 ```
-Well thats rude! They're refusing to allow us to search, no wonder gobuster found nothing..
+Well would you look at that! A subdomain we didn't spot before `preprod-payroll.trick.htb` Sounds like something worth checking out
+
+#### Web content: Round 2
+Doing a quick rescan with nmap doesn't show any new services hidden behind the domain, but it does show us one which has changed.
+```
+80/tcp open  http    nginx 1.14.2
+| http-title: Admin | Employee's Payroll Management System
+|_Requested resource was login.php
+| http-cookie-flags: 
+|   /: 
+|     PHPSESSID: 
+|_      httponly flag not set
+|_http-server-header: nginx/1.14.2
+Service Info: Host:  debian.localdomain; OS: Linux; CPE: cpe:/o:linux:linux_kernel
+```
+A PHP site! A PHP admin site! Well of course we have to check this out, but first of all, lets rerun those gobusters!
+```
+===============================================================
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://preprod-payroll.trick.htb/
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /home/elliot/Programs/Security/Lists/SecLists/Discovery/Web-Content/raft-medium-words.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.1.0
+[+] Timeout:                 10s
+===============================================================
+2022/11/10 11:38:10 Starting gobuster in directory enumeration mode
+===============================================================
+/assets               (Status: 301) [Size: 185] [--> http://preprod-payroll.trick.htb/assets/]
+/database             (Status: 301) [Size: 185] [--> http://preprod-payroll.trick.htb/database/]
+/.                    (Status: 301) [Size: 185] [--> http://preprod-payroll.trick.htb/./]       
+                                                                                                
+===============================================================
+2022/11/10 11:40:32 Finished
+===============================================================
+```
+nice nice, so some database being used here too.. hopefully that means SQLi might be an avaliable path to get in
+
 
 ### Vulnerability & Exploit analysis 
 We already have a few leads in terms of OpenSSH and ISC BIND, a good source of already exploited vulnerabilities is a tool called `searchsploit` which i believe just searches the entire exploitdb database
@@ -252,7 +345,7 @@ We already have a few leads in terms of OpenSSH and ISC BIND, a good source of a
 ```
 searchsploit OpenSSH                                                                                                                                    ✔ 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
- Exploit Title                                                                                                                                                                    |  Path
+ Exploit Title                                                   location: login.php                                                                                                                 |  Path
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
 Debian OpenSSH - (Authenticated) Remote SELinux Privilege Escalation                                                                                                              | linux/remote/6094.txt
 Dropbear / OpenSSH Server - 'MAX_UNAUTH_CLIENTS' Denial of Service                                                                                                                | multiple/dos/1572.pl
@@ -327,9 +420,12 @@ Microsoft Windows Kernel - 'win32k!NtQueryCompositionSurfaceBinding' Stack Memor
 Zabbix 2.0.5 - Cleartext ldap_bind_Password Password Disclosure (Metasploit)                                                                                                      | php/webapps/36157.rb
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
 ```
+Well there's certainly a lot there, unfortunately none which applies directly to our version numbers exactly, so there may not be any public exploits currently avaliable for us to use, which means either writing one ourselves from the CVE's found earlier (i may try this sometime in the future but not just yet) or to just continue with attempting to exploit the services we can directly.
 
-#### Exploitation
+### Exploitation
 
+#### SMTP
+So first just because i want to use the tool i wrote i'll do a username fuzz against the SMTP service
 ```
 ############ FUZZING debian.localdomain ####
 # Found 7 /( 495 / 822 )
@@ -337,16 +433,13 @@ Zabbix 2.0.5 - Cleartext ldap_bind_Password Password Disclosure (Metasploit)    
 # Trying: anonymous
 # Verified Users:
 #"root@debian.localdomain"
-
 #"BACKUP@debian.localdomain"
-
 #"MAIL@debian.localdomain"
-
 #"NEWS@debian.localdomain"
-
 #"POSTMASTER@debian.localdomain"
-
 #"ROOT@debian.localdomain"
-
 #"SYS@debian.localdomain"
 ```
+so some interesting usernames, i'm sure that showed up in there log files too! 
+
+#### Web Content
