@@ -312,6 +312,7 @@ Doing a quick rescan with nmap doesn't show any new services hidden behind the d
 |_http-server-header: nginx/1.14.2
 Service Info: Host:  debian.localdomain; OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
+![Employee payroll admin site](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/3Trick_Second_site.png)
 A PHP site! A PHP admin site! Well of course we have to check this out, but first of all, lets rerun those gobusters!
 ```
 ===============================================================
@@ -443,3 +444,42 @@ So first just because i want to use the tool i wrote i'll do a username fuzz aga
 so some interesting usernames, i'm sure that showed up in there log files too! 
 
 #### Web Content
+
+Ok so lets take a look at that admin site, as usual i'll quickly try some SQLi on this admin login to see if we can bypass
+![Employee payroll admin site](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/3Trick_Second_site.png)
+![attempting sqli](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/4Trick_SQLi.png)
+![sqli fails but interesting info leaks](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/5Trick_SQLi_response.png)
+
+Hmm interesting, so it looks like SQL may not be typically injected on, but we get something interesting leaked back to us, along with the number 3, if i was a lazy developer (hehe) i might implement a feature where a returned number is actually a reference to whether or not you sent the right username + password combo
+
+![analysing login post request](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/6Trick_login_request.png)
+![analysing login post request 2](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/7Trick_login_response.png)
+![analysing login post request 3](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/8Ttrick_login_response_edited.png)
+![analysing login post request 4](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/9Trick_login_forwarded.png)
+
+Aha! So we are now forwareded to `index.php?page=home`
+
+![analysing login post request 5](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/10Trick_redirected.png)
+But it seems like just after this we are redirected yet again to the login page... But what's this? The page is still rendered even with it being a 302 code!
+We can simply edit the status code in this response and view the page as normal, i've set up a filter in burpsuite to do this automatically
+
+![burpsuite settings](https://github.com/e-war/Writeups/blob/master/HackTheBox/Trick/Screenshots/11Trick_Burpsettings.png)
+
+###### SAVE
+```
+POST /ajax.php?action=save_employee HTTP/1.1
+Host: preprod-payroll.trick.htb
+Content-Length: 93
+Accept: */*
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.5304.63 Safari/537.36
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Origin: http://preprod-payroll.trick.htb
+Referer: http://preprod-payroll.trick.htb/index.php?page=employee
+Accept-Encoding: gzip, deflate
+Accept-Language: en-GB,en-US;q=0.9,en;q=0.8
+Cookie: PHPSESSID=temjs3d2tirbi0snvh7uqcnedf
+Connection: close
+
+id=&firstname=Good&middlename=&lastname=Hackker&department_id=1&position_id=1&salary=10000000
+```
