@@ -1,4 +1,5 @@
-# Trick WIP
+# Trick RIP
+## Trick was retired before i finished it :( 
 ## Start: 8/11/2022
 
 ## IP: 10.10.11.166
