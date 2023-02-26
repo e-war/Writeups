@@ -150,7 +150,8 @@ Referrer-Policy: strict-origin-when-cross-origin
 ```
 
 SQL INJECTION! We see `{"bookingpress_service_id":"10.5.15-MariaDB-0+deb11u1","bookingpress_category_id":"Debian 11","bookingpress_service_name":"debian-linux-gnu"` 
-I've been looking at starting to look at hackerone recently, this would be the point where i would report this to the company.
+I've been looking at hackerone recently, this would be the point where i would report this to the company.
+
 But i'm in the role of the threat now so on we go!
 
 ## Exploitation
