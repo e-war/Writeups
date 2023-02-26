@@ -1,0 +1,4 @@
+ID,user_url,user_pass,user_email,user_login,user_status,display_name,user_nicename,user_registered,user_activation_key
+1,http://metapress.htb,$P$BGrGrgf2wToBS79i07Rk9sN4Fzk.TV.,admin@metapress.htb,admin,0,admin,admin,2022-06-23 17:58:28,<blank>
+2,<blank>,$P$B4aNM28N0E.tMy/JIcnVMZbGcU16Q70,manager@metapress.htb,manager,0,manager,manager,2022-06-23 18:07:55,<blank>
+

