@@ -140,3 +140,46 @@ smorton
 
 ```
 and we're in to a legit user!
+
+### Privilage escalation
+
+running lp again, we find that we can run one file as sudo 
+```
+
+User smorton may run the following commands on investigation:
+    (root) NOPASSWD: /usr/bin/binary
+
+```
+running the file we just see it exiting... we may have to look a little deeper at this file to see if it is expecting any argument from us
+
+i opened this file in ghidra and IDA free, im still unsure of which one i prefer, have to do more dissassembeling... i looked at the assembly
+I'm just gonna paste IDA's output, i can read both just fine but ida spreads the codeblocks+if statements out in a tree like formation vs ghidras big long list
+
+
+```
+cmp     [rbp+var_44], 3
+```
+IDA free also has a cloud decompiler tool which is nice, but obviously i'd prefer to keep this all on my own machine, but it tells us this results in
+```
+  if ( argc != 3 )
+```
+argc is short for arg count, so the number of arguments we have to pass to this is 3, typically linux programs filename is the 1st argument so we have 2 to add.
+moving on, we can see another comparison, a strcmp call
+```
+loc_1481:
+mov     rax, [rbp+var_50]
+add     rax, 10h
+mov     rax, [rax]
+lea     rsi, s2         ; "lDnxUysaQn"
+mov     rdi, rax        ; s1
+call    _strcmp
+test    eax, eax
+```
+so the logic here is kinda backwards i guess, the 3rd argument, [2] as 0 counts as first entry must be this string or the program exits.
+```
+ if ( strcmp(argv[2], "lDnxUysaQn") )
+  {
+    puts("Exiting... ");
+    exit(0);
+  }
+```
