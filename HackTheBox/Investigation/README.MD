@@ -183,3 +183,30 @@ so the logic here is kinda backwards i guess, the 3rd argument, [2] as 0 counts 
     exit(0);
   }
 ```
+This next segment is a bit long so ill group what's interesting and explain it
+```
+lea     rdi, aRunning   ; "Running... "
+...
+lea     rsi, modes      ; "wb"
+mov     rdi, rax        ; filename
+call    _fopen
+mov     [rbp+stream], rax
+call    _curl_easy_init
+...
+mov     eax, 0
+call    _curl_easy_setopt
+mov     rax, [rbp+var_20]
+mov     rdi, rax
+call    _curl_easy_perform
+mov     [rbp+var_2C], eax
+cmp     [rbp+var_2C], 0
+jnz     loc_166A
+
+... (if jump)
+loc_166A:
+lea     rdi, s          ; "Exiting... "
+
+```
+
+Hope that's understandable :| So what we should see given correct input up to this point is `Running...`, the program then goes on to open a file to write and begins the curl process, so its safe to assume we're curling a file to disk and from the dissassembled view we can confirm its using the second argument as the source `  curl_easy_setopt(v5, 10002LL, argv[1]);` , which means we may be able to download files hosted by us, no execution yet but we haven't finished yet!
+Then if the program fails the process exits, but if it doesn't fail, we move on!
