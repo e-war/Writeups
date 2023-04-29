@@ -108,4 +108,6 @@ def download():
     return send_file(filename, as_attachment=True)
 ```
 Exploiting this is just too easy, it just needs to be an absolute path and the application will happily provide any file as long as it exists.
-![Directory Traversal 1](https://github.com/e-war/Writeups/HTB/OnlyForYou/Screenshots/directory_traversal1.png)
+![Directory Traversal 1](https://github.com/e-war/Writeups/blob/master/HackTheBox/OnlyForYou/Screenshots/directory_traversal1.png)
+
+
