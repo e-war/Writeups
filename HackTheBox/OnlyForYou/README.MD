@@ -431,7 +431,6 @@ build this with
 
 
 `sudo /usr/bin/pip3 download http://127.0.0.1:3000/john/tedt5/raw/master/open-1.tar.gz`
-http://localhost:3000/john/tedt5/raw/master/open-1.tar.gz
 
 and 
 ```
