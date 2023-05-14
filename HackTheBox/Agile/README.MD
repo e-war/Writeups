@@ -30,10 +30,10 @@ Checking the website, a "military grade" encrypted password vault, registering a
 
 There is a Local File Inclusion vulnerability within this csv download code which allows the change of the `fn` url variable to a file or directory reletive to `/tmp` as seen in the screenshot.
 
-![LFI vulnerability via superpass.htb/download?fn=../etc/passwd](http://github.com/e-war/Writeups/blob/master/HackTheBox/Agile/Screenshots/LFI.png)
+![LFI vulnerability via superpass.htb/download?fn=../etc/passwd](https://github.com/e-war/Writeups/blob/master/HackTheBox/Agile/Screenshots/LFI.png?raw=true)
 
 I can also crash the input which shows us a full path to some of the running python files, with the LFI i will read these files to get a better understanding of the code to see if more vulnerabilities exist.
 
-![Crashing input to view python file paths](http://github.com/e-war/Writeups/blob/master/HackTheBox/Agile/Screenshots/LFI2.png)
+![Crashing input to view python file paths](https://github.com/e-war/Writeups/blob/master/HackTheBox/Agile/Screenshots/LFI2.png?raw=true)
 
-![Viewing python files](http://github.com/e-war/Writeups/blob/master/HackTheBox/Agile/Screenshots/LFI3.png)
+![Viewing python files](https://github.com/e-war/Writeups/blob/master/HackTheBox/Agile/Screenshots/LFI3.png?raw=true)
