@@ -287,10 +287,9 @@ Well that seems as good a target.
 Although my script doesn't handle this file as well as i'd like, the hex returned was entered into cyberchef, i knew this was the sql file as the header is in the format i expect.
 
 ```
- H SQLite format 
-...
-StableimagesimagesCREATE TABLE images (url TEXT PRIMARY KEY NOT NULL, original TEXT NOT NULL, username TEXT NOT NULL)+? indexsqlite_autoindex_images_1imagesf+tableusersusersCREATE TABLE users (username TEXT PRIMARY KEY NOT NULL, password TEXT NOT NULL))= indexsqlite_autoindex_users_1users       
-   æ æ   -emilyabigchonkyboi123
+ HSQLite format 
+
+StableimagesimagesCREATE TABLE images (url TEXT PRIMARY KEY NOT NULL, original TEXT NOT NULL, username TEXT NOT NULL)+?indexsqlite_autoindex_images_1images+tableusersusersCREATE TABLE users (username TEXT PRIMARY KEY NOT NULL, password TEXT NOT NULL)ndexsqlite_autoindex_users_1users-emilyabigchonkyboi123
 ```
 I've stripped a lot out here, but the main thing is that within this file exists a username and password it seems. `emily : abigchonkyboi123` (and yes these work in SSH), time for a quick review before moving on.
 
